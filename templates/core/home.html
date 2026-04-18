@@ -4,292 +4,184 @@
 
 {% block content %}
 
-<!-- NOTICE TICKER — latest notice only -->
+<!-- NOTICE -->
 {% if latest_notice %}
 <div class="notice-ticker">
   <span class="ticker-label">📢 NOTICE</span>
   <span class="ticker-content">
     <strong>{{ latest_notice.title }}</strong>
-    {% if latest_notice.description %}&nbsp;—&nbsp; {{ latest_notice.description|truncatechars:120 }}{% endif %}
+    {% if latest_notice.description %} — {{ latest_notice.description|truncatechars:120 }}{% endif %}
   </span>
   <span class="ticker-date">{{ latest_notice.created_at|date:"d M Y" }}</span>
 </div>
 {% endif %}
 
-<!-- HERO -->
-<section class="hero">
-  <div class="hero-title">BZSF</div>
-  <p class="hero-org">DIU Bhola Zila Students Forum</p>
-  <p class="hero-sub">Daffodil International University &nbsp;·&nbsp; Solidarity &nbsp;·&nbsp; Excellence</p>
-  <div class="hero-actions">
-    <a href="{% url 'events:list' %}" class="btn btn-primary">Explore Events</a>
-    {% if not user.is_authenticated %}
-      <a href="{% url 'accounts:signup' %}" class="btn btn-glass">Join BZSF</a>
-    {% else %}
-      <a href="{% url 'accounts:team' %}" class="btn btn-glass">View Team</a>
-    {% endif %}
-  </div>
-</section>
 
-<!-- LATEST EVENTS -->
-{% if events %}
-<section class="section-wrapper" style="padding-top:0">
-  <div style="max-width:1200px;margin:0 auto">
-    <div class="section-header">
-      <div>
-        <h2 class="section-label">Latest Events</h2>
-        <p class="section-sub">What's happening at BZSF</p>
-      </div>
-      <a href="{% url 'events:list' %}" class="btn btn-glass btn-sm">View All →</a>
+<!-- ================= SPLIT HERO (FINAL) ================= -->
+<section class="split-hero">
+
+  <!-- LEFT SIDE = ORIGINAL HERO CONTENT (ONLY ONE BZSF) -->
+  <div class="split-hero-left">
+
+    <div class="hero-title">BZSF</div>
+
+    <p class="hero-org">
+      DIU Bhola Zila Students Forum
+    </p>
+
+    <p class="hero-sub">
+      Daffodil International University · Solidarity · Excellence
+    </p>
+
+    <div class="split-hero-actions">
+      <a href="{% url 'events:list' %}" class="btn btn-primary">Explore Events</a>
+
+      {% if not user.is_authenticated %}
+        <a href="{% url 'accounts:signup' %}" class="btn btn-glass">Join BZSF</a>
+      {% else %}
+        <a href="{% url 'accounts:team' %}" class="btn btn-glass">View Team</a>
+      {% endif %}
     </div>
-    <div class="card-grid">
-      {% for event in events %}
-      <div class="glass content-card">
-        {% if event.images.first %}
-        <img src="{{ event.images.first.image.url }}" alt="{{ event.title }}"
-          style="width:100%;aspect-ratio:16/9;object-fit:cover;border-radius:10px;margin-bottom:1rem">
-        {% endif %}
-        <h3 class="card-title">{{ event.title }}</h3>
-        <p class="card-meta">📅 {{ event.created_at|date:"d M Y" }}{% if event.created_by %} &nbsp;·&nbsp; {{ event.created_by.name }}{% endif %}</p>
-        {% if event.description %}<p class="card-body">{{ event.description|truncatechars:110 }}</p>{% endif %}
-        <div style="margin-top:1rem">
-          <a href="{% url 'events:detail' event.pk %}" class="btn btn-glass btn-sm">Read More</a>
-        </div>
+
+  </div>
+
+
+  <!-- RIGHT SIDE IMAGE SLIDER -->
+  <div class="split-hero-right">
+    <div class="split-slider-track">
+
+      <div class="split-slider-card">
+        <img src="{% static 'img/slider/1.jpg' %}">
       </div>
-      {% endfor %}
+
+      <div class="split-slider-card">
+        <img src="{% static 'img/slider/2.jpg' %}">
+      </div>
+
+      <div class="split-slider-card">
+        <img src="{% static 'img/slider/3.jpg' %}">
+      </div>
+
+      <div class="split-slider-card">
+        <img src="{% static 'img/slider/4.jpg' %}">
+      </div>
+
+      <div class="split-slider-card">
+        <img src="{% static 'img/slider/5.jpg' %}">
+      </div>
+
+      <!-- duplicate for loop effect -->
+      <div class="split-slider-card">
+        <img src="{% static 'img/slider/4.jpg' %}">
+      </div>
+
+      <div class="split-slider-card">
+        <img src="{% static 'img/slider/3.jpg' %}">
+      </div>
+
     </div>
   </div>
+
+</section>
+<!-- ================= END SPLIT HERO ================= -->
+
+
+<!-- EVENTS -->
+{% if events %}
+<section class="section-wrapper">
+
+  <div class="section-header">
+    <div>
+      <h2 class="section-label">Latest Events</h2>
+      <p class="section-sub">What's happening at BZSF</p>
+    </div>
+    <a href="{% url 'events:list' %}" class="btn btn-glass btn-sm">View All →</a>
+  </div>
+
+  <div class="card-grid">
+    {% for event in events %}
+    <div class="glass content-card">
+
+      {% if event.images.first %}
+      <img src="{{ event.images.first.image.url }}"
+           style="width:100%;aspect-ratio:16/9;object-fit:cover;border-radius:10px;margin-bottom:1rem">
+      {% endif %}
+
+      <h3 class="card-title">{{ event.title }}</h3>
+      <p class="card-meta">{{ event.created_at|date:"d M Y" }}</p>
+      <p class="card-body">{{ event.description|truncatechars:110 }}</p>
+
+    </div>
+    {% endfor %}
+  </div>
+
 </section>
 {% endif %}
 
+
 <!-- MEMBERS SLIDER -->
-<section class="section-wrapper" style="background:rgba(47,107,58,0.05);border-top:1px solid var(--glass-b);border-bottom:1px solid var(--glass-b)">
-  <div style="text-align:center;margin-bottom:2.5rem">
+<section class="members-section">
+
+  <div class="section-wrapper">
+
     <h2 class="section-label" style="text-align:center">Our Members</h2>
     <p class="section-sub" style="text-align:center">The people who make BZSF</p>
-  </div>
 
-  <div class="slider-overflow">
-    <div class="members-track">
-      {% for member in members %}
-      <div class="member-card portrait-style">
-        <div class="member-avatar-wrap">
-          {% if member.profile.photo %}
-            <img src="{{ member.profile.photo.url }}" alt="{{ member.name }}">
-          {% else %}
-            <span class="member-initial">{{ member.name|first|upper }}</span>
-          {% endif %}
+    <div class="members-slider-wrap">
+      <div class="members-track">
+
+        {% for member in members %}
+        <div class="member-card portrait-style">
+
+          <div class="member-avatar-wrap">
+            {% if member.profile.photo %}
+              <img src="{{ member.profile.photo.url }}">
+            {% else %}
+              <span class="member-initial">{{ member.name|first|upper }}</span>
+            {% endif %}
+          </div>
+
+          <div class="member-info">
+            <p class="member-name">{{ member.name }}</p>
+            <p class="member-role">{{ member.profile.designation }}</p>
+
+            {% if member.profile.batch %}
+              <p class="member-batch">Batch {{ member.profile.batch }}</p>
+            {% endif %}
+
+            {% if member.profile.bio %}
+              <p class="member-bio">{{ member.profile.bio }}</p>
+            {% endif %}
+          </div>
+
         </div>
+        {% endfor %}
 
-        <div class="member-info">
-          <p class="member-name">{{ member.name }}</p>
-          <p class="member-role">{{ member.profile.designation|default:member.get_role_display }}</p>
+        <!-- duplicate loop -->
+        {% for member in members %}
+        <div class="member-card portrait-style">
 
-          {% if member.profile.batch %}
-            <p class="member-batch">Batch {{ member.profile.batch }}</p>
-          {% endif %}
+          <div class="member-avatar-wrap">
+            {% if member.profile.photo %}
+              <img src="{{ member.profile.photo.url }}">
+            {% else %}
+              <span class="member-initial">{{ member.name|first|upper }}</span>
+            {% endif %}
+          </div>
 
-          {% if member.profile.bio %}
-            <p class="member-bio">{{ member.profile.bio }}</p>
-          {% endif %}
+          <div class="member-info">
+            <p class="member-name">{{ member.name }}</p>
+            <p class="member-role">{{ member.profile.designation }}</p>
+          </div>
+
         </div>
+        {% endfor %}
+
       </div>
-      {% endfor %}
-
-      {% for member in members %}
-      <div class="member-card portrait-style">
-        <div class="member-avatar-wrap">
-          {% if member.profile.photo %}
-            <img src="{{ member.profile.photo.url }}" alt="{{ member.name }}">
-          {% else %}
-            <span class="member-initial">{{ member.name|first|upper }}</span>
-          {% endif %}
-        </div>
-
-        <div class="member-info">
-          <p class="member-name">{{ member.name }}</p>
-          <p class="member-role">{{ member.profile.designation|default:member.get_role_display }}</p>
-
-          {% if member.profile.batch %}
-            <p class="member-batch">Batch {{ member.profile.batch }}</p>
-          {% endif %}
-
-          {% if member.profile.bio %}
-            <p class="member-bio">{{ member.profile.bio }}</p>
-          {% endif %}
-        </div>
-      </div>
-      {% endfor %}
     </div>
+
   </div>
+
 </section>
-
-<style>
-.slider-overflow{
-  overflow:hidden;
-  position:relative;
-}
-
-.members-track{
-  display:flex;
-  gap:1rem;
-  width:max-content;
-  animation:scrollLeft 28s linear infinite;
-}
-
-.members-track:hover{
-  animation-play-state:paused;
-}
-
-@keyframes scrollLeft{
-  0%{transform:translateX(0)}
-  100%{transform:translateX(-50%)}
-}
-
-.member-card.portrait-style{
-  min-width:220px;
-  max-width:220px;
-  flex-shrink:0;
-
-  padding:1.15rem;
-  background:#fff;
-  border:1px solid rgba(47,107,58,0.12);
-  border-radius:18px;
-  box-shadow:0 8px 22px rgba(24,48,29,0.05);
-
-  display:flex;
-  flex-direction:column;
-  align-items:center;
-  text-align:center;
-
-  transition:all 0.25s ease;
-}
-
-.member-card.portrait-style:hover{
-  transform:translateY(-4px);
-  box-shadow:0 14px 32px rgba(24,48,29,0.10);
-  border-color:rgba(47,107,58,0.22);
-}
-
-.member-avatar-wrap{
-  width:88px;
-  height:88px;
-  border-radius:50%;
-  overflow:hidden;
-  flex-shrink:0;
-
-  display:flex;
-  align-items:center;
-  justify-content:center;
-
-  background:#f4faf2;
-  border:3px solid rgba(47,107,58,0.10);
-  box-shadow:0 8px 18px rgba(24,48,29,0.06);
-}
-
-.member-avatar-wrap img{
-  width:100%;
-  height:100%;
-  object-fit:cover;
-}
-
-.member-initial{
-  font-family:'Playfair Display',serif;
-  font-size:2rem;
-  font-weight:700;
-  color:var(--dark);
-}
-
-.member-info{
-  width:100%;
-  margin-top:0.9rem;
-}
-
-.member-name{
-  font-size:1rem;
-  font-weight:800;
-  color:var(--dark);
-  line-height:1.2;
-}
-
-.member-role{
-  font-size:0.78rem;
-  color:var(--mid);
-  font-weight:700;
-  margin-top:0.18rem;
-}
-
-.member-batch{
-  font-size:0.72rem;
-  color:var(--muted);
-  margin-top:0.14rem;
-}
-
-.member-bio{
-  font-size:0.72rem;
-  color:var(--muted);
-  margin-top:0.45rem;
-  line-height:1.45;
-
-  display:-webkit-box;
-  -webkit-line-clamp:3;
-  -webkit-box-orient:vertical;
-  overflow:hidden;
-}
-
-.slider-overflow::before,
-.slider-overflow::after{
-  content:'';
-  position:absolute;
-  top:0;
-  width:70px;
-  height:100%;
-  z-index:2;
-  pointer-events:none;
-}
-
-.slider-overflow::before{
-  left:0;
-  background:linear-gradient(to right,#f6faf4,transparent);
-}
-
-.slider-overflow::after{
-  right:0;
-  background:linear-gradient(to left,#f6faf4,transparent);
-}
-
-@media(max-width:768px){
-  .member-card.portrait-style{
-    min-width:200px;
-    max-width:200px;
-    padding:1rem;
-  }
-
-  .member-avatar-wrap{
-    width:78px;
-    height:78px;
-  }
-
-  .member-name{
-    font-size:0.95rem;
-  }
-}
-
-@media(max-width:480px){
-  .member-card.portrait-style{
-    min-width:180px;
-    max-width:180px;
-  }
-
-  .member-avatar-wrap{
-    width:72px;
-    height:72px;
-  }
-
-  .member-bio{
-    -webkit-line-clamp:2;
-  }
-}
-</style>
 
 {% endblock %}
