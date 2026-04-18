@@ -1,0 +1,49 @@
+{% extends 'base.html' %}
+{% block title %}Upload Gallery Photos — BHOLA{% endblock %}
+{% block content %}
+<div class="page-wrapper" style="max-width:600px">
+  <div style="margin-bottom:1.5rem">
+    <a href="{% url 'gallery:gallery' %}" style="color:var(--muted);text-decoration:none;font-size:0.85rem">← Back to Gallery</a>
+  </div>
+  <div class="glass" style="padding:2.5rem">
+    <h1 style="font-family:'Playfair Display',serif;font-size:1.8rem;font-weight:700;margin-bottom:0.5rem">Upload Photos</h1>
+    <p style="color:var(--muted);font-size:0.85rem;margin-bottom:2rem">Gallery holds a maximum of 20 photos. Admin only.</p>
+
+    <form method="post" enctype="multipart/form-data">
+      {% csrf_token %}
+      <div class="form-group">
+        <label>Photos (multiple allowed)</label>
+        <input type="file" name="images" multiple accept="image/*">
+      </div>
+      <div class="form-group">
+        <label>Caption (optional)</label>
+        <input type="text" name="caption" placeholder="Photo caption...">
+      </div>
+      <div id="preview-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(100px,1fr));gap:0.5rem;margin-top:0.75rem;margin-bottom:1rem"></div>
+      <button type="submit" class="btn btn-primary">Upload Photos</button>
+    </form>
+  </div>
+</div>
+
+{% block extra_js %}
+<script>
+document.querySelector('input[type="file"]').addEventListener('change', function(){
+  const grid = document.getElementById('preview-grid');
+  grid.innerHTML = '';
+  [...this.files].forEach(file => {
+    const reader = new FileReader();
+    reader.onload = e => {
+      const div = document.createElement('div');
+      div.style.cssText = 'border-radius:8px;overflow:hidden;aspect-ratio:1;border:1px solid rgba(255,255,255,0.1)';
+      const img = document.createElement('img');
+      img.src = e.target.result;
+      img.style.cssText = 'width:100%;height:100%;object-fit:cover';
+      div.appendChild(img);
+      grid.appendChild(div);
+    };
+    reader.readAsDataURL(file);
+  });
+});
+</script>
+{% endblock %}
+{% endblock %}

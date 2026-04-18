@@ -1,0 +1,45 @@
+{% extends 'base.html' %}
+{% block title %}Notice Board — BHOLA{% endblock %}
+{% block content %}
+<div class="page-wrapper">
+  <div class="page-header" style="display:flex;justify-content:space-between;align-items:flex-end;flex-wrap:wrap;gap:1rem">
+    <div>
+      <h1>Notice Board</h1>
+      <p>Official announcements from BHOLA</p>
+    </div>
+    {% if user.is_authenticated and user.can_post %}
+      <a href="{% url 'notices:create' %}" class="btn btn-primary">+ Post Notice</a>
+    {% endif %}
+  </div>
+
+  {% if notices %}
+  <div class="glass" style="overflow:hidden">
+    {% for notice in notices %}
+    <div class="notice-item">
+      <div style="flex:1;min-width:0">
+        <p class="notice-title">{{ notice.title }}</p>
+        <p class="notice-desc">{{ notice.description }}</p>
+        <p class="notice-date">
+          📅 {{ notice.created_at|date:"d M Y, g:i A" }}
+          {% if notice.created_by %}&nbsp;·&nbsp; {{ notice.created_by.name }}{% endif %}
+        </p>
+      </div>
+      {% if user.is_authenticated and user.can_post %}
+        <form method="post" action="{% url 'notices:delete' notice.pk %}" style="margin-left:1rem;flex-shrink:0">
+          {% csrf_token %}
+          <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Delete this notice?')">✕</button>
+        </form>
+      {% endif %}
+    </div>
+    {% endfor %}
+  </div>
+  {% else %}
+  <div class="glass" style="padding:3rem;text-align:center">
+    <p style="color:var(--muted);font-size:1.1rem">No notices posted yet.</p>
+    {% if user.is_authenticated and user.can_post %}
+      <a href="{% url 'notices:create' %}" class="btn btn-primary" style="margin-top:1rem">Post First Notice</a>
+    {% endif %}
+  </div>
+  {% endif %}
+</div>
+{% endblock %}

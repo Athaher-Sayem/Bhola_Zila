@@ -1,0 +1,87 @@
+{% extends 'base.html' %}
+{% block title %}My Profile — BHOLA{% endblock %}
+{% block content %}
+<div class="page-wrapper">
+
+  <!-- Profile Header -->
+  <div class="glass profile-header" style="margin-bottom:2rem">
+    {% if profile.photo %}
+      <img src="{{ profile.photo.url }}" alt="{{ request.user.name }}" class="profile-photo">
+    {% else %}
+      <div class="profile-photo" style="display:flex;align-items:center;justify-content:center;font-family:'Playfair Display',serif;font-size:2.5rem;font-weight:700;color:var(--muted)">
+        {{ request.user.name|first }}
+      </div>
+    {% endif %}
+    <div class="profile-info">
+      <h2>{{ request.user.name }}</h2>
+      <p>{{ request.user.email }} &nbsp;·&nbsp; ID: {{ request.user.student_id }}</p>
+      <div style="display:flex;gap:0.5rem;margin-top:0.75rem;flex-wrap:wrap">
+        {% if request.user.role == 'admin' %}
+          <span class="badge badge-gold">Admin</span>
+        {% elif request.user.role == 'second_admin' %}
+          <span class="badge badge-purple">2nd Admin</span>
+        {% else %}
+          <span class="badge badge-accent">Member</span>
+        {% endif %}
+        {% if request.user.is_verified %}
+          <span class="badge" style="background:rgba(16,185,129,0.15);color:#6ee7b7;border:1px solid rgba(16,185,129,0.3)">✓ Verified</span>
+        {% else %}
+          <span class="badge" style="background:rgba(245,158,11,0.12);color:#fcd34d;border:1px solid rgba(245,158,11,0.3)">Pending Verification</span>
+        {% endif %}
+        {% if profile.designation %}
+          <span class="badge badge-accent">{{ profile.designation }}</span>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+
+  <!-- Edit Form -->
+  <div class="glass" style="padding:2rem">
+    <h3 style="font-family:'Playfair Display',serif;font-size:1.3rem;margin-bottom:1.5rem">Edit Profile</h3>
+    <form method="post" enctype="multipart/form-data" novalidate>
+      {% csrf_token %}
+      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:1.25rem">
+        {% for field in form %}
+          <div class="form-group" {% if field.name == 'bio' %}style="grid-column:1/-1"{% endif %}>
+            <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+            {{ field }}
+            {% if field.errors %}<ul class="errorlist">{% for e in field.errors %}<li>{{ e }}</li>{% endfor %}</ul>{% endif %}
+          </div>
+        {% endfor %}
+      </div>
+      <div style="margin-top:1.5rem;display:flex;gap:0.75rem;flex-wrap:wrap">
+        <button type="submit" class="btn btn-primary">Save Changes</button>
+        <a href="{% url 'core:home' %}" class="btn btn-glass">Cancel</a>
+      </div>
+    </form>
+  </div>
+
+  <!-- Info Section -->
+  {% if profile.bio or profile.address or profile.batch %}
+  <div class="glass" style="padding:2rem;margin-top:1.5rem">
+    <h3 style="font-family:'Playfair Display',serif;font-size:1.3rem;margin-bottom:1.25rem">Profile Info</h3>
+    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:1rem">
+      {% if profile.batch %}
+      <div>
+        <p style="font-size:0.75rem;color:var(--muted);text-transform:uppercase;letter-spacing:0.05em">Batch</p>
+        <p style="margin-top:0.25rem">{{ profile.batch }}</p>
+      </div>
+      {% endif %}
+      {% if profile.address %}
+      <div>
+        <p style="font-size:0.75rem;color:var(--muted);text-transform:uppercase;letter-spacing:0.05em">Address</p>
+        <p style="margin-top:0.25rem">{{ profile.address }}</p>
+      </div>
+      {% endif %}
+    </div>
+    {% if profile.bio %}
+    <div style="margin-top:1rem">
+      <p style="font-size:0.75rem;color:var(--muted);text-transform:uppercase;letter-spacing:0.05em">Bio</p>
+      <p style="margin-top:0.25rem;color:var(--muted);line-height:1.7">{{ profile.bio }}</p>
+    </div>
+    {% endif %}
+  </div>
+  {% endif %}
+
+</div>
+{% endblock %}

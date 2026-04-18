@@ -1,0 +1,54 @@
+{% extends 'base.html' %}
+{% block title %}Events — BHOLA{% endblock %}
+{% block content %}
+<div class="page-wrapper">
+  <div class="page-header" style="display:flex;justify-content:space-between;align-items:flex-end;flex-wrap:wrap;gap:1rem">
+    <div>
+      <h1>Events</h1>
+      <p>What's happening at BHOLA</p>
+    </div>
+    {% if user.is_authenticated and user.can_post %}
+      <a href="{% url 'events:create' %}" class="btn btn-primary">+ Post Event</a>
+    {% endif %}
+  </div>
+
+  {% if events %}
+  <div class="card-grid">
+    {% for event in events %}
+    <div class="glass content-card">
+      {% if event.images.all %}
+      <div class="event-images" style="{% if event.images.count == 1 %}grid-template-columns:1fr{% endif %}">
+        {% for img in event.images.all|slice:":4" %}
+          <img src="{{ img.image.url }}" alt="{{ event.title }}" onclick="window.location='{% url 'events:detail' event.pk %}'">
+        {% endfor %}
+      </div>
+      {% endif %}
+      <h3 class="card-title" style="margin-top:1rem">{{ event.title }}</h3>
+      <p class="card-meta">
+        {{ event.created_at|date:"d M Y, g:i A" }}
+        {% if event.created_by %}&nbsp;·&nbsp; {{ event.created_by.name }}{% endif %}
+        &nbsp;·&nbsp; <span style="color:var(--accent)">{{ event.images.count }} photo{{ event.images.count|pluralize }}</span>
+      </p>
+      {% if event.description %}
+        <p class="card-body">{{ event.description|truncatechars:120 }}</p>
+      {% endif %}
+      <div style="display:flex;gap:0.5rem;margin-top:1rem;flex-wrap:wrap">
+        <a href="{% url 'events:detail' event.pk %}" class="btn btn-glass btn-sm">View Details</a>
+        {% if user.is_authenticated and user.is_admin %}
+          <a href="{% url 'events:delete' event.pk %}" class="btn btn-danger btn-sm"
+            onclick="return confirm('Delete this event?')">Delete</a>
+        {% endif %}
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+  {% else %}
+  <div class="glass" style="padding:3rem;text-align:center">
+    <p style="color:var(--muted);font-size:1.1rem">No events posted yet.</p>
+    {% if user.is_authenticated and user.can_post %}
+      <a href="{% url 'events:create' %}" class="btn btn-primary" style="margin-top:1rem">Post First Event</a>
+    {% endif %}
+  </div>
+  {% endif %}
+</div>
+{% endblock %}
