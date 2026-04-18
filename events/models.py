@@ -6,6 +6,7 @@ def event_image_path(instance, filename):
     import os
     ext = os.path.splitext(filename)[1].lower() or '.jpg'
     return f'events/{instance.event_id}/{uuid.uuid4().hex}{ext}'
+    
 
 class Event(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)

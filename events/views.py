@@ -48,7 +48,7 @@ def event_create(request):
             event = form.save(commit=False)
             event.created_by = request.user
             event.save()
-            for raw_img in request.FILES.getlist('images'):
+            for raw_img in form.cleaned_data['images']:   # ← use form data, not request.FILES
                 compressed = compress_image(raw_img)
                 EventImage.objects.create(event=event, image=compressed)
             messages.success(request, 'Event posted successfully!')
@@ -56,6 +56,9 @@ def event_create(request):
     else:
         form = EventForm()
     return render(request, 'events/form.html', {'form': form})
+
+
+
 
 
 @login_required
