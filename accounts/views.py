@@ -9,6 +9,13 @@ from django.core.files.base import ContentFile
 from .models import User, Profile, PreAdmin
 from .forms import SignupForm, LoginForm, ProfileForm
 import io, os
+from django.utils import timezone
+from datetime import timedelta
+from django.shortcuts import get_object_or_404, redirect
+from django.http import HttpResponse
+from .models import User
+import uuid
+
 
 
 def compress_profile_photo(upload_file):
@@ -30,46 +37,133 @@ def compress_profile_photo(upload_file):
         return upload_file
 
 
+# def signup_view(request):
+#     if request.user.is_authenticated:
+#         return redirect('core:home')
+#     if request.method == 'POST':
+#         form = SignupForm(request.POST)
+#         if form.is_valid():
+#             user = form.save(commit=False)
+#             user.is_email_verified = False
+#             user.save()
+#             token = user.email_verification_token
+#             verify_url = request.build_absolute_uri(
+#                 reverse('accounts:verify_email', args=[str(token)])
+#             )
+#             try:
+#                 send_mail(
+#                     'Verify your DIU BZSF account',
+#                     f'Hi {user.name},\n\nClick the link to verify your email:\n{verify_url}\n\nDIU BZSF Team',
+#                     settings.DEFAULT_FROM_EMAIL,
+#                     [user.email],
+#                     fail_silently=False,
+#                 )
+#                 messages.success(request, 'Account created! Please check your email to verify.')
+#             except Exception:
+#                 messages.warning(request, 'Account created! (Check console for verification link in dev mode.)')
+#             return redirect('accounts:login')
+#     else:
+#         form = SignupForm()
+#     return render(request, 'accounts/signup.html', {'form': form})
 def signup_view(request):
     if request.user.is_authenticated:
         return redirect('core:home')
+
     if request.method == 'POST':
         form = SignupForm(request.POST)
+
         if form.is_valid():
             user = form.save(commit=False)
+
             user.is_email_verified = False
+            user.email_verification_token = uuid.uuid4()
+            user.token_created_at = timezone.now()
             user.save()
-            token = user.email_verification_token
+
             verify_url = request.build_absolute_uri(
-                reverse('accounts:verify_email', args=[str(token)])
+                reverse('accounts:verify_email', args=[str(user.email_verification_token)])
             )
-            try:
-                send_mail(
-                    'Verify your DIU BZSF account',
-                    f'Hi {user.name},\n\nClick the link to verify your email:\n{verify_url}\n\nDIU BZSF Team',
-                    settings.DEFAULT_FROM_EMAIL,
-                    [user.email],
-                    fail_silently=False,
-                )
-                messages.success(request, 'Account created! Please check your email to verify.')
-            except Exception:
-                messages.warning(request, 'Account created! (Check console for verification link in dev mode.)')
+
+            send_mail(
+                "Verify your BHOLA account 🎉",
+                f"""
+Hi {user.name},
+
+Welcome to BHOLA 🎉
+
+Please verify your email using the link below:
+
+{verify_url}
+
+⚠ This link is valid for 5 minutes only.
+
+If you did not create this account, ignore this email.
+
+— BHOLA Team
+""",
+                settings.DEFAULT_FROM_EMAIL,
+                [user.email],
+                fail_silently=False,
+            )
+
+            messages.success(request, 'Account created! Please check your email to verify.')
             return redirect('accounts:login')
     else:
         form = SignupForm()
+
     return render(request, 'accounts/signup.html', {'form': form})
 
 
 def verify_email(request, token):
-    try:
-        user = User.objects.get(email_verification_token=token)
-        user.is_email_verified = True
-        user.save()
-        messages.success(request, 'Email verified! You can now log in.')
-    except User.DoesNotExist:
+    user = get_object_or_404(User, email_verification_token=token)
+
+    if user.token_created_at is None:
         messages.error(request, 'Invalid or expired verification link.')
+        return redirect('accounts:login')
+
+    if timezone.now() > user.token_created_at + timedelta(minutes=5):
+        messages.error(request, 'Verification link expired. Please sign up again.')
+        return redirect('accounts:login')
+
+    user.is_email_verified = True
+    user.email_verification_token = None
+    user.token_created_at = None
+    user.save(update_fields=['is_email_verified', 'email_verification_token', 'token_created_at'])
+
+    messages.success(request, 'Email verified! You can now log in.')
     return redirect('accounts:login')
 
+# def verify_email(request, token):
+#     try:
+#         user = User.objects.get(email_verification_token=token)
+#         user.is_email_verified = True
+#         user.save()
+#         messages.success(request, 'Email verified! You can now log in.')
+#     except User.DoesNotExist:
+#         messages.error(request, 'Invalid or expired verification link.')
+#     return redirect('accounts:login')
+# def verify_email(request, token):
+
+#     try:
+#         user = get_object_or_404(User, email_verification_token=token)
+
+#         # ---------------- EXPIRY CHECK (5 MINUTES) ----------------
+#         if user.token_created_at is None or timezone.now() > user.token_created_at + timedelta(minutes=5):
+#             messages.error(request, "Verification link expired. Please register again.")
+#             return redirect("accounts:login")
+
+#         # ---------------- VERIFY USER ----------------
+#         user.is_email_verified = True
+#         user.email_verification_token = None
+
+#         user.save(update_fields=['is_email_verified', 'email_verification_token'])
+
+#         messages.success(request, "Email verified successfully! You can now log in.")
+
+#     except User.DoesNotExist:
+#         messages.error(request, "Invalid verification link.")
+
+#     return redirect("accounts:login")
 
 def login_view(request):
     if request.user.is_authenticated:

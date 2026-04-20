@@ -1,64 +1,107 @@
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin
 from django.db import models
 import uuid
+from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin
 
+from django.utils import timezone
+
+
+# ---------------- USER MANAGER ----------------
 class UserManager(BaseUserManager):
+
     def create_user(self, email, name, student_id, password=None):
         if not email:
-            raise ValueError('Email is required')
+            raise ValueError("Email is required")
+
         email = self.normalize_email(email)
-        user = self.model(email=email, name=name, student_id=student_id)
+
+        user = self.model(
+            email=email,
+            name=name,
+            student_id=student_id
+        )
+
         user.set_password(password)
         user.save(using=self._db)
         return user
 
     def create_superuser(self, email, name, student_id, password):
+
         user = self.create_user(email, name, student_id, password)
-        user.role = 'admin'
+
+        user.role = "admin"
         user.is_staff = True
         user.is_superuser = True
         user.is_email_verified = True
         user.is_verified = True
+
         user.save(using=self._db)
         return user
 
+
+# ---------------- USER MODEL ----------------
 class User(AbstractBaseUser, PermissionsMixin):
+
     ROLE_CHOICES = [
-        ('admin', 'Admin'),
-        ('second_admin', '2nd Admin'),
-        ('member', 'Member'),
+        ("admin", "Admin"),
+        ("second_admin", "2nd Admin"),
+        ("member", "Member"),
     ]
+
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+
     email = models.EmailField(unique=True)
     name = models.CharField(max_length=150)
     student_id = models.CharField(max_length=50, unique=True)
-    role = models.CharField(max_length=20, choices=ROLE_CHOICES, default='member')
+
+    role = models.CharField(max_length=20, choices=ROLE_CHOICES, default="member")
+
+    # ---------------- EMAIL VERIFICATION ----------------
     is_email_verified = models.BooleanField(default=False)
-    is_verified = models.BooleanField(default=False)  # verified by 2nd admin/admin
+    is_verified = models.BooleanField(default=False)
+
+    email_verification_token = models.UUIDField(
+    default=uuid.uuid4,
+    null=True,
+    blank=True,
+    unique=True
+    )
+    token_created_at = models.DateTimeField(null=True, blank=True)
+
+    # ---------------- ADMIN VERIFICATION ----------------
+    is_verified = models.BooleanField(default=False)
+
+    # ---------------- STATUS ----------------
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)
-    date_joined = models.DateTimeField(auto_now_add=True)
-    email_verification_token = models.UUIDField(default=uuid.uuid4, editable=False)
 
-    USERNAME_FIELD = 'email'
-    REQUIRED_FIELDS = ['name', 'student_id']
+    date_joined = models.DateTimeField(auto_now_add=True)
+
+    # ---------------- AUTH SETTINGS ----------------
+    USERNAME_FIELD = "email"
+    REQUIRED_FIELDS = ["name", "student_id"]
 
     objects = UserManager()
 
     def __str__(self):
         return f"{self.name} ({self.email})"
 
+    # ---------------- HELPERS ----------------
     @property
     def is_admin(self):
-        return self.role == 'admin'
+        return self.role == "admin"
 
     @property
     def is_second_admin(self):
-        return self.role == 'second_admin'
+        return self.role == "second_admin"
 
     @property
     def can_post(self):
-        return self.role in ['admin', 'second_admin']
+        return self.role in ["admin", "second_admin"]
+
+    # ---------------- TOKEN CHECK ----------------
+    def is_token_expired(self):
+        return timezone.now() > self.token_created_at + timezone.timedelta(minutes=5)
 
 
 class Profile(models.Model):
@@ -82,3 +125,5 @@ class PreAdmin(models.Model):
 
     def __str__(self):
         return f"{self.name} - {self.designation}"
+
+
