@@ -5,7 +5,7 @@ from dotenv import load_dotenv
 load_dotenv()
 
 BASE_DIR = Path(__file__).resolve().parent.parent
-SECRET_KEY = os.getenv('SECRET_KEY', 'django-insecure-bhola-change-this-in-production')
+SECRET_KEY = os.getenv('SECRET_KEY', 'k9t@izm0&4x^+hptrlb7zd648t1o%kd7^z_4svl7mc@m@o2gu&')
 DEBUG = os.getenv('DEBUG', 'True') == 'True'
 ALLOWED_HOSTS = ['*']
 
@@ -18,7 +18,8 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'crispy_forms',
     'crispy_bootstrap5',
-    'accounts',
+      'accounts.apps.AccountsConfig',
+    
     'core',
     'events',
     'notices',
