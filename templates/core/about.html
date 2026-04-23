@@ -1,26 +1,84 @@
 {% extends 'base.html' %}
 {% block title %}About — DIU BZSF{% endblock %}
 {% block content %}
-<div class="page-wrapper">
-  <div class="page-header" style="text-align:center">
-    <h1>DIU Bhola Zila Students Forum</h1>
-    <p>Daffodil International University &nbsp;·&nbsp; <a href="mailto:diu.bzsf@gmail.com" style="color:var(--light)">diu.bzsf@gmail.com</a></p>
+ 
+<div class="about-page">
+  <!-- Header -->
+  <div class="about-header">
+    <span class="about-badge">
+      <span class="about-badge__dot"></span>
+      Bhola Zila Students Forum
+    </span>
+    <h1 class="about-title">DIU <span>BZSF</span></h1>
+    <p class="about-sub">
+      Daffodil International University &nbsp;·&nbsp;
+      <a href="mailto:diu.bzsf@gmail.com">diu.bzsf@gmail.com</a>
+    </p>
+    <div class="about-divider"></div>
   </div>
-  <div class="glass" style="padding:2.5rem">
-    <div class="about-section">
-      <h2>Our Mission</h2>
-      <p>DIU BZSF is a dedicated community organization built on the foundation of solidarity, mutual support, and academic excellence. We bring together students from Bhola Zila studying at Daffodil International University to create a unified, empowering environment where every member can thrive.</p>
-      <h2>Our Vision</h2>
-      <p>We envision a future where DIU BZSF becomes the most impactful student community from Bhola — one that nurtures leadership, fosters innovation, and creates lasting bonds between its members. We aim to leave a meaningful legacy both at DIU and in our home district of Bhola.</p>
-      <h2>Our History</h2>
-      <p>Founded by a passionate group of Bhola students at Daffodil International University, BZSF has grown steadily over the years. What began as informal gatherings evolved into a structured organization with clear goals, defined leadership, and a growing membership base. Through events, cultural programs, and collective action, BZSF has become a cornerstone of campus life for students from Bhola.</p>
-      <h2>Leadership Structure</h2>
-      <p>Led by an elected President, Vice President, General Secretary, and Press Secretary, DIU BZSF operates with transparency and accountability. Our leadership team works tirelessly to represent member interests, organize events, and drive the organization forward every semester.</p>
-      <h2>Contact Us</h2>
-      <p>📧 Email: <a href="mailto:diu.bzsf@gmail.com" style="color:var(--light)">diu.bzsf@gmail.com</a><br>
-      🏫 Institution: Daffodil International University<br>
-      📍 District: Bhola, Bangladesh</p>
+  <!-- Stats -->
+  <div class="about-stats">
+    <div class="about-stat">
+      <div class="about-stat__num">200+</div>
+      <div class="about-stat__label">Active Members</div>
+    </div>
+    <div class="about-stat">
+      <div class="about-stat__num">3+</div>
+      <div class="about-stat__label">Years Active</div>
+    </div>
+    <div class="about-stat">
+      <div class="about-stat__num">50+</div>
+      <div class="about-stat__label">Events Held</div>
     </div>
   </div>
-</div>
+  <!-- Content card -->
+  <div class="about-card">
+    <div class="about-row">
+      <div class="about-icon about-icon--1">🎯</div>
+      <div class="about-body">
+        <h2>Our Mission</h2>
+        <p>DIU BZSF is a dedicated community organization built on the foundation of solidarity, mutual support, and academic excellence. We bring together students from Bhola Zila studying at Daffodil International University to create a unified, empowering environment where every member can thrive.</p>
+      </div>
+    </div>
+    <div class="about-sep"></div>
+    <div class="about-row">
+      <div class="about-icon about-icon--2">🔭</div>
+      <div class="about-body">
+        <h2>Our Vision</h2>
+        <p>We envision a future where DIU BZSF becomes the most impactful student community from Bhola — one that nurtures leadership, fosters innovation, and creates lasting bonds between its members. We aim to leave a meaningful legacy both at DIU and in our home district of Bhola.</p>
+      </div>
+    </div>
+    <div class="about-sep"></div>
+    <div class="about-row">
+      <div class="about-icon about-icon--3">📜</div>
+      <div class="about-body">
+        <h2>Our History</h2>
+        <p>Founded by a passionate group of Bhola students at Daffodil International University, BZSF has grown steadily over the years. What began as informal gatherings evolved into a structured organization with clear goals, defined leadership, and a growing membership base. Through events, cultural programs, and collective action, BZSF has become a cornerstone of campus life for students from Bhola.</p>
+      </div>
+    </div>
+    <div class="about-sep"></div>
+    <div class="about-row">
+      <div class="about-icon about-icon--4">🏛️</div>
+      <div class="about-body">
+        <h2>Leadership Structure</h2>
+        <p>Led by an elected President, Vice President, General Secretary, and Press Secretary, DIU BZSF operates with transparency and accountability. Our leadership team works tirelessly to represent member interests, organize events, and drive the organization forward every semester.</p>
+      </div>
+    </div>
+    <div class="about-sep"></div>
+    <div class="about-row">
+      <div class="about-icon about-icon--5">✉️</div>
+      <div class="about-body">
+        <h2>Contact Us</h2>
+        <div class="about-pills">
+          <span class="about-pill">📧 Email: <a href="mailto:diu.bzsf@gmail.com">diu.bzsf@gmail.com</a></span>
+          <span class="about-pill">🏫 Daffodil International University</span>
+          <span class="about-pill">📍 Bhola District, Bangladesh</span>
+        </div>
+      </div>
+    </div>
+  </div><!-- /.about-card -->
+  <p class="about-footer">
+    © 2025 DIU BZSF &nbsp;·&nbsp; Daffodil International University &nbsp;·&nbsp; Bhola, Bangladesh
+  </p>
+</div><!-- /.about-page -->
 {% endblock %}

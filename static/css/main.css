@@ -1194,3 +1194,274 @@ footer{
 
 
 
+
+
+
+
+/* ============================================================
+   DIU BZSF — About Page
+   All classes are prefixed with  about-  so they never clash
+   with your other page styles. Drop this file into your
+   existing project and link it only on the about page.
+   ============================================================ */
+/* ── Wrapper ────────────────────────────────────────────── */
+.about-page {
+  max-width: 860px;
+  margin: 0 auto;
+  padding: 2.5rem 1.5rem 5rem;
+  font-family: 'Inter', system-ui, sans-serif;
+}
+/* ── Header ─────────────────────────────────────────────── */
+.about-header {
+  text-align: center;
+  padding: 2.5rem 1rem 2rem;
+  animation: ab-down 0.6s ease both;
+}
+.about-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  background: var(--primary-soft);
+  border: 1px solid rgba(47,107,58,0.22);
+  color: var(--primary);
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+  padding: 0.36rem 1rem;
+  border-radius: 999px;
+  margin-bottom: 1.3rem;
+}
+.about-badge__dot {
+  display: inline-block;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--primary);
+  animation: ab-pulse 1.8s ease-in-out infinite;
+}
+.about-title {
+  font-size: clamp(2rem, 5vw, 2.9rem);
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  line-height: 1.12;
+  color: var(--dark);
+  margin-bottom: 0.8rem;
+}
+.about-title span {
+  background: linear-gradient(135deg, var(--dark) 0%, var(--mid) 55%, var(--light) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+.about-sub {
+  font-size: 0.91rem;
+  color: var(--muted);
+}
+.about-sub a {
+  color: var(--primary);
+  font-weight: 600;
+  text-decoration: none;
+}
+.about-sub a:hover { color: var(--primary-hover); }
+.about-divider {
+  width: 50px;
+  height: 3px;
+  background: linear-gradient(90deg, var(--dark), var(--light));
+  border-radius: 999px;
+  margin: 1.4rem auto 0;
+}
+/* ── Stats ──────────────────────────────────────────────── */
+.about-stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1rem;
+  margin: 2rem 0 0;
+  animation: ab-up 0.6s 0.15s ease both;
+}
+.about-stat {
+  background: var(--bg2, #fff);
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  padding: 1.3rem 1rem;
+  text-align: center;
+  box-shadow: 0 10px 30px rgba(24,48,29,0.06);
+  position: relative;
+  overflow: hidden;
+  transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
+}
+.about-stat::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, var(--primary-soft) 0%, transparent 65%);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+.about-stat:hover { transform: translateY(-5px); box-shadow: 0 16px 40px rgba(24,48,29,0.10); border-color: rgba(47,107,58,0.28); }
+.about-stat:hover::before { opacity: 1; }
+.about-stat__num {
+  font-size: 2rem;
+  font-weight: 800;
+  letter-spacing: -0.04em;
+  color: var(--dark);
+  line-height: 1;
+  margin-bottom: 0.35rem;
+  position: relative;
+}
+.about-stat__label {
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--muted);
+  position: relative;
+}
+/* ── Card ───────────────────────────────────────────────── */
+.about-card {
+  background: rgba(255,255,255,0.82);
+  border: 1px solid rgba(52,103,57,0.10);
+  border-radius: 18px;
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  box-shadow: 0 10px 40px rgba(24,48,29,0.09), 0 0 48px rgba(47,107,58,0.08);
+  padding: 2.5rem 2.5rem 3rem;
+  margin-top: 1.5rem;
+  animation: ab-up 0.6s 0.28s ease both;
+}
+/* ── Row (icon + body) ──────────────────────────────────── */
+.about-row {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 0 1.5rem;
+  margin-bottom: 2.2rem;
+  animation: ab-up 0.55s ease both;
+}
+.about-row:nth-child(1)  { animation-delay: 0.32s; }
+.about-row:nth-child(3)  { animation-delay: 0.40s; }
+.about-row:nth-child(5)  { animation-delay: 0.48s; }
+.about-row:nth-child(7)  { animation-delay: 0.56s; }
+.about-row:nth-child(9)  { animation-delay: 0.64s; }
+/* ── Icon chip ──────────────────────────────────────────── */
+.about-icon {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.15rem;
+  flex-shrink: 0;
+  margin-top: 0.1rem;
+  border: 1px solid transparent;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+.about-row:hover .about-icon {
+  transform: scale(1.08);
+  box-shadow: 0 4px 14px rgba(47,107,58,0.14);
+}
+.about-icon--1 { background: rgba(47,107,58,0.10);  border-color: rgba(47,107,58,0.15); }
+.about-icon--2 { background: rgba(79,138,87,0.10);  border-color: rgba(79,138,87,0.15); }
+.about-icon--3 { background: rgba(129,183,135,0.15); border-color: rgba(129,183,135,0.22); }
+.about-icon--4 { background: rgba(47,107,58,0.08);  border-color: rgba(47,107,58,0.12); }
+.about-icon--5 { background: rgba(232,243,231,0.90); border-color: rgba(47,107,58,0.14); }
+/* ── Body text ──────────────────────────────────────────── */
+.about-body h2 {
+  font-size: 1.18rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: var(--dark);
+  margin-bottom: 0.55rem;
+  line-height: 1.3;
+}
+.about-body h2::after {
+  content: '';
+  display: block;
+  width: 34px;
+  height: 2px;
+  background: linear-gradient(90deg, var(--dark), var(--light));
+  border-radius: 999px;
+  margin-top: 0.4rem;
+}
+.about-body p {
+  color: var(--muted);
+  line-height: 1.88;
+  font-size: 0.91rem;
+}
+/* ── Contact pills ──────────────────────────────────────── */
+.about-pills {
+  display: flex;
+  flex-direction: column;
+  gap: 0.55rem;
+  margin-top: 0.2rem;
+}
+.about-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: var(--primary-soft);
+  border: 1px solid rgba(47,107,58,0.15);
+  border-radius: 999px;
+  padding: 0.45rem 1.05rem;
+  font-size: 0.86rem;
+  font-weight: 500;
+  color: var(--muted);
+  width: fit-content;
+  transition: background 0.3s ease, border-color 0.3s ease, color 0.3s ease, transform 0.3s ease;
+}
+.about-pill:hover {
+  background: rgba(47,107,58,0.12);
+  border-color: rgba(47,107,58,0.30);
+  color: var(--text);
+  transform: translateX(5px);
+}
+.about-pill a {
+  color: var(--primary);
+  font-weight: 600;
+  text-decoration: none;
+}
+.about-pill a:hover { color: var(--primary-hover); }
+/* ── Separator ──────────────────────────────────────────── */
+.about-sep {
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(47,107,58,0.12), transparent);
+  margin: 0 0 2.2rem;
+}
+/* ── Footer ─────────────────────────────────────────────── */
+.about-footer {
+  text-align: center;
+  margin-top: 2rem;
+  font-size: 0.77rem;
+  font-weight: 500;
+  color: var(--muted);
+  letter-spacing: 0.03em;
+  animation: ab-fade 1s 0.6s ease both;
+}
+/* ── Keyframes ──────────────────────────────────────────── */
+@keyframes ab-down {
+  from { opacity: 0; transform: translateY(-18px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes ab-up {
+  from { opacity: 0; transform: translateY(22px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes ab-fade {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+@keyframes ab-pulse {
+  0%, 100% { opacity: 1;    transform: scale(1); }
+  50%       { opacity: 0.3; transform: scale(0.6); }
+}
+/* ── Responsive ─────────────────────────────────────────── */
+@media (max-width: 640px) {
+  .about-page   { padding: 1.5rem 1rem 4rem; }
+  .about-header { padding: 1.8rem 0.5rem 1.5rem; }
+  .about-card   { padding: 1.4rem 1.2rem 1.8rem; }
+  .about-stats  { grid-template-columns: 1fr 1fr; }
+  .about-stats .about-stat:last-child { grid-column: span 2; }
+  .about-row    { grid-template-columns: 1fr; gap: 0.5rem; }
+  .about-icon   { width: 38px; height: 38px; font-size: 1rem; }
+  .about-body h2 { font-size: 1.08rem; }
+}
