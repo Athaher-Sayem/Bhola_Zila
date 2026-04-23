@@ -21,3 +21,4 @@ document.querySelectorAll('.nav-links a').forEach(a => {
     a.classList.add('active');
   }
 });
+

@@ -7,15 +7,24 @@
 <!-- NOTICE -->
 {% if latest_notice %}
 <div class="notice-ticker">
+
   <span class="ticker-label">📢 NOTICE</span>
-  <span class="ticker-content">
-    <strong>{{ latest_notice.title }}</strong>
-    {% if latest_notice.description %} — {{ latest_notice.description|truncatechars:120 }}{% endif %}
+
+  <div class="ticker-content">
+    <div class="ticker-item">
+      <strong>{{ latest_notice.title }}</strong>
+      {% if latest_notice.description %}
+      — {{ latest_notice.description|truncatechars:120 }}
+      {% endif %}
+    </div>
+  </div>
+
+  <span class="ticker-date">
+    {{ latest_notice.created_at|date:"d M Y" }}
   </span>
-  <span class="ticker-date">{{ latest_notice.created_at|date:"d M Y" }}</span>
+
 </div>
 {% endif %}
-
 
 <!-- ================= SPLIT HERO (FINAL) ================= -->
 <section class="split-hero">
@@ -157,7 +166,7 @@
         </div>
         {% endfor %}
 
-        <!-- duplicate loop -->
+        {% comment %} <!-- duplicate loop -->
         {% for member in members %}
         <div class="member-card portrait-style">
 
@@ -175,7 +184,7 @@
           </div>
 
         </div>
-        {% endfor %}
+        {% endfor %} {% endcomment %}
 
       </div>
     </div>
@@ -185,3 +194,12 @@
 </section>
 
 {% endblock %}
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+  const track = document.getElementById("tickerTrack");
+  if (track) {
+    track.innerHTML += track.innerHTML;
+  }
+});
+</script>
