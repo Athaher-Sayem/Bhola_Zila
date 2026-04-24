@@ -13,6 +13,7 @@
       </div>
     {% endif %}
     <div class="profile-info">
+      
       <h2>{{ request.user.name }}</h2>
       <p>{{ request.user.email }} &nbsp;·&nbsp; ID: {{ request.user.student_id }}</p>
       <div style="display:flex;gap:0.5rem;margin-top:0.75rem;flex-wrap:wrap">
@@ -31,6 +32,9 @@
         {% if profile.designation %}
           <span class="badge badge-accent">{{ profile.designation }}</span>
         {% endif %}
+        <a href="{% url 'accounts:change_password' %}" class="btn btn-glass btn-sm">
+          🔒 Change Password
+        </a>
       </div>
     </div>
   </div>

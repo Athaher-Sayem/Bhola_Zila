@@ -78,6 +78,8 @@ class User(AbstractBaseUser, PermissionsMixin):
     date_joined = models.DateTimeField(auto_now_add=True)
 
     # ---------------- AUTH SETTINGS ----------------
+    password_reset_token = models.UUIDField(null=True, blank=True, editable=False)
+    password_reset_token_created_at = models.DateTimeField(null=True, blank=True)
     USERNAME_FIELD = "email"
     REQUIRED_FIELDS = ["name", "student_id"]
 
@@ -98,6 +100,21 @@ class User(AbstractBaseUser, PermissionsMixin):
     @property
     def can_post(self):
         return self.role in ["admin", "second_admin"]
+    
+    @property
+    def password_reset_expired(self):
+        if not self.password_reset_token_created_at:
+            return True
+        from django.utils import timezone
+        expiry = self.password_reset_token_created_at + timezone.timedelta(hours=2)
+        return timezone.now() > expiry
+
+    def generate_password_reset_token(self):
+        import uuid
+        from django.utils import timezone
+        self.password_reset_token = uuid.uuid4()
+        self.password_reset_token_created_at = timezone.now()
+        self.save(update_fields=['password_reset_token', 'password_reset_token_created_at'])
 
     # ---------------- TOKEN CHECK ----------------
     def is_token_expired(self):

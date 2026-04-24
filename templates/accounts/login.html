@@ -18,6 +18,12 @@
         {{ form.password }}
         {% if form.password.errors %}<ul class="errorlist">{% for e in form.password.errors %}<li>{{ e }}</li>{% endfor %}</ul>{% endif %}
       </div>
+
+      <div style="text-align:right;margin-top:.5rem">
+      <a href="{% url 'accounts:forgot_password' %}"
+        style="font-size:.8rem;color:var(--muted)">Forgot password?</a>
+      </div>
+
       {% if form.non_field_errors %}
         <div class="alert alert-error" style="margin-bottom:1rem">{{ form.non_field_errors }}</div>
       {% endif %}

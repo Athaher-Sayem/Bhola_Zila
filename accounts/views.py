@@ -7,7 +7,10 @@ from django.conf import settings
 from django.urls import reverse
 from django.core.files.base import ContentFile
 from .models import User, Profile, PreAdmin
-from .forms import SignupForm, LoginForm, ProfileForm
+from .forms import (SignupForm, LoginForm, ProfileForm,
+                    ChangePasswordForm, ForgotPasswordForm,
+                    PasswordResetConfirmForm)
+from django.contrib.auth import update_session_auth_hash
 import io, os
 from django.utils import timezone
 from datetime import timedelta
@@ -257,3 +260,99 @@ def verify_members(request):
             messages.info(request, f'{user.name} was not verified.')
         return redirect('accounts:verify_members')
     return render(request, 'accounts/verify_members.html', {'pending': pending})
+
+
+
+@login_required
+def change_password(request):
+    if request.method == 'POST':
+        form = ChangePasswordForm(request.user, request.POST)
+        if form.is_valid():
+            user = form.save()
+            update_session_auth_hash(request, user)
+            _log_action(request.user, 'edit', 'password', str(request.user.pk), request.user.name, request)
+            messages.success(request, 'Password updated successfully.')
+            return redirect('accounts:profile')
+    else:
+        form = ChangePasswordForm(request.user)
+    return render(request, 'accounts/change_password.html', {'form': form})
+
+
+def forgot_password(request):
+    if request.user.is_authenticated:
+        return redirect('core:home')
+    if request.method == 'POST':
+        form = ForgotPasswordForm(request.POST)
+        if form.is_valid():
+            email = form.cleaned_data['email']
+            try:
+                user = User.objects.get(email=email, is_email_verified=True)
+                user.generate_password_reset_token()
+                reset_url = request.build_absolute_uri(
+                    reverse('accounts:password_reset_confirm', args=[str(user.password_reset_token)])
+                )
+                try:
+                    send_mail(
+                        'Reset your DIU BZSF password',
+                        f'Hi {user.name},\n\nReset your password here:\n{reset_url}\n\nThis link expires in 2 hours.\n\nDIU BZSF Team',
+                        settings.DEFAULT_FROM_EMAIL,
+                        [user.email],
+                        fail_silently=False,
+                    )
+                except Exception:
+                    pass
+            except User.DoesNotExist:
+                pass  # Silent — don't reveal whether email exists
+            messages.success(
+                request,
+                'If that email is registered, a reset link has been sent. Check your inbox (or console in dev mode).'
+            )
+            return redirect('accounts:login')
+    else:
+        form = ForgotPasswordForm()
+    return render(request, 'accounts/forgot_password.html', {'form': form})
+
+
+def password_reset_confirm(request, token):
+    try:
+        user = User.objects.get(password_reset_token=token)
+    except User.DoesNotExist:
+        messages.error(request, 'Invalid or expired password reset link.')
+        return redirect('accounts:forgot_password')
+
+    if user.password_reset_expired:
+        messages.error(request, 'This reset link has expired (2 h window). Please request a new one.')
+        return redirect('accounts:forgot_password')
+
+    if request.method == 'POST':
+        form = PasswordResetConfirmForm(request.POST)
+        if form.is_valid():
+            user.set_password(form.cleaned_data['password1'])
+            user.password_reset_token = None
+            user.password_reset_token_created_at = None
+            user.save()
+            messages.success(request, 'Password reset successfully! You can now log in.')
+            return redirect('accounts:login')
+    else:
+        form = PasswordResetConfirmForm()
+    return render(request, 'accounts/password_reset_confirm.html', {'form': form, 'token': token})
+
+
+
+# ---- helper ----
+def _log_action(user, action, target_type, target_id, target_name, request, details=''):
+    """Create an ActivityLog entry (silently — never let logging break the request)."""
+    try:
+        from adminpanel.models import ActivityLog
+        ip = request.META.get('REMOTE_ADDR')
+        ActivityLog.objects.create(
+            user=user,
+            action=action,
+            target_type=target_type,
+            target_id=target_id,
+            target_name=target_name,
+            details=details,
+            ip_address=ip,
+        )
+    except Exception:
+        pass

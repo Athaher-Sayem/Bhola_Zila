@@ -11,4 +11,7 @@ urlpatterns = [
     path('team/', views.team_view, name='team'),
     path('verify-members/', views.verify_members, name='verify_members'),
     path('verify/<uuid:token>/', views.verify_email, name='verify_email'),
+    path('change-password/',          views.change_password,        name='change_password'),
+    path('forgot-password/',          views.forgot_password,        name='forgot_password'),
+    path('reset-password/<uuid:token>/', views.password_reset_confirm, name='password_reset_confirm'),
 ]
