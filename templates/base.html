@@ -31,6 +31,9 @@
       {% if user.is_authenticated %}
         <li><a href="{% url 'accounts:team' %}">Team</a></li>
         <li><a href="{% url 'accounts:profile' %}">Profile</a></li>
+         {% if user.is_admin %}
+          <li><a href="{% url 'adminpanel:dashboard' %}">⚙ Panel</a></li>
+          {% endif %}
         {% if user.can_post %}
           <li><a href="{% url 'accounts:verify_members' %}">Verify</a></li>
         {% endif %}

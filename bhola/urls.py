@@ -10,4 +10,5 @@ urlpatterns = [
     path('events/', include('events.urls')),
     path('notices/', include('notices.urls')),
     path('gallery/', include('gallery.urls')),
+    path('panel/',    include('adminpanel.urls')),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

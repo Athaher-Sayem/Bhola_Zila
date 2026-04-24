@@ -1,0 +1,73 @@
+{% extends 'base.html' %}
+{% block title %}Activity Logs — Admin Panel{% endblock %}
+{% block content %}
+<div class="page-wrapper">
+
+  <div class="panel-header">
+    <div>
+      <h1 class="panel-title">📊 Activity Logs</h1>
+      <p class="panel-subtitle">Full audit trail of system actions</p>
+    </div>
+    <div class="panel-nav">
+      <a href="{% url 'adminpanel:dashboard' %}" class="panel-nav-btn">Dashboard</a>
+      <a href="{% url 'adminpanel:users' %}" class="panel-nav-btn">Users</a>
+      <a href="{% url 'adminpanel:content' %}" class="panel-nav-btn">Content</a>
+      <a href="{% url 'adminpanel:logs' %}" class="panel-nav-btn active">Logs</a>
+    </div>
+  </div>
+
+  <!-- Filters -->
+  <form method="get" class="search-bar" style="margin-bottom:1.5rem">
+    <select name="action">
+      <option value="">All Actions</option>
+      {% for val, label in action_choices %}
+        <option value="{{ val }}" {% if request.GET.action == val %}selected{% endif %}>{{ label }}</option>
+      {% endfor %}
+    </select>
+    <select name="target">
+      <option value="">All Targets</option>
+      {% for t in target_types %}
+        <option value="{{ t }}" {% if request.GET.target == t %}selected{% endif %}>{{ t }}</option>
+      {% endfor %}
+    </select>
+    <button type="submit" class="btn btn-primary">Filter</button>
+    {% if request.GET.action or request.GET.target %}
+      <a href="{% url 'adminpanel:logs' %}" class="btn btn-glass">Clear</a>
+    {% endif %}
+  </form>
+
+  <div class="glass" style="overflow:hidden">
+    <div class="panel-table-wrap">
+      <table class="panel-table">
+        <thead>
+          <tr>
+            <th>Time</th>
+            <th>User</th>
+            <th>Action</th>
+            <th>Target</th>
+            <th>Name</th>
+            <th>Details</th>
+            <th>IP</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for log in logs %}
+          <tr>
+            <td style="font-size:0.75rem;color:var(--muted);white-space:nowrap">{{ log.timestamp|date:"d M y, H:i" }}</td>
+            <td style="font-size:0.85rem;font-weight:500">{{ log.user.name|default:"System" }}</td>
+            <td><span class="log-badge log-{{ log.action }}">{{ log.action }}</span></td>
+            <td style="font-size:0.8rem;color:var(--muted)">{{ log.target_type }}</td>
+            <td style="font-size:0.82rem;max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ log.target_name }}</td>
+            <td style="font-size:0.78rem;color:var(--muted);max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ log.details|default:"—" }}</td>
+            <td style="font-size:0.75rem;color:var(--muted)">{{ log.ip_address|default:"—" }}</td>
+          </tr>
+          {% empty %}
+          <tr><td colspan="7" style="text-align:center;color:var(--muted);padding:2rem">No logs found.</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+</div>
+{% endblock %}
