@@ -130,22 +130,44 @@ If you did not create this account, ignore this email.
     return render(request, 'accounts/signup.html', {'form': form})
 
 
+# def verify_email(request, token):
+#     user = get_object_or_404(User, email_verification_token=token)
+
+#     if user.token_created_at is None:
+#         messages.error(request, 'Invalid or expired verification link.')
+#         return redirect('accounts:login')
+
+#     if timezone.now() > user.token_created_at + timedelta(minutes=5):
+#         messages.error(request, 'Verification link expired. Please sign up again.')
+#         return redirect('accounts:login')
+
+#     user.is_email_verified = True
+#     user.email_verification_token = None
+#     user.token_created_at = None
+#     user.save(update_fields=['is_email_verified', 'email_verification_token', 'token_created_at'])
+
+#     messages.success(request, 'Email verified! You can now log in.')
+#     return redirect('accounts:login')
+
 def verify_email(request, token):
-    user = get_object_or_404(User, email_verification_token=token)
-
-    if user.token_created_at is None:
-        messages.error(request, 'Invalid or expired verification link.')
+    try:
+        user = User.objects.get(email_verification_token=token)
+    except User.DoesNotExist:
+        messages.error(request, 'Invalid or already-used link.')
         return redirect('accounts:login')
 
-    if timezone.now() > user.token_created_at + timedelta(minutes=5):
-        messages.error(request, 'Verification link expired. Please sign up again.')
+    if user.is_email_verified:
+        messages.info(request, 'Email already verified.')
         return redirect('accounts:login')
+
+    if user.verification_expired:
+        user.delete()   # remove expired account
+        messages.error(request,
+            'Link expired (24h). Account removed — please register again.')
+        return redirect('accounts:signup')
 
     user.is_email_verified = True
-    user.email_verification_token = None
-    user.token_created_at = None
-    user.save(update_fields=['is_email_verified', 'email_verification_token', 'token_created_at'])
-
+    user.save(update_fields=['is_email_verified'])
     messages.success(request, 'Email verified! You can now log in.')
     return redirect('accounts:login')
 
@@ -189,7 +211,11 @@ def login_view(request):
         if form.is_valid():
             user = form.get_user()
             if not user.is_email_verified:
-                messages.error(request, 'Please verify your email first.')
+                if user.verification_expired:
+                    user.delete()
+                    messages.error(request, 'Account removed (email not verified in 24h). Please register again.')
+                else:
+                     messages.error(request, 'Please verify your email. Check your inbox.')
                 return redirect('accounts:login')
             login(request, user)
             _log(user, 'login', 'session', '', user.name, request)
@@ -356,3 +382,27 @@ def _log_action(user, action, target_type, target_id, target_name, request, deta
         )
     except Exception:
         pass
+
+
+
+def resend_verification(request):
+    if request.user.is_authenticated:
+        return redirect('core:home')
+    if request.method == 'POST':
+        email = request.POST.get('email', '').strip()
+        try:
+            user = User.objects.get(email=email, is_email_verified=False)
+        except User.DoesNotExist:
+            messages.error(request, 'No unverified account with that email.')
+            return redirect('accounts:resend_verification')
+
+        if user.verification_expired:
+            user.delete()
+            messages.error(request, 'Account expired. Please register again.')
+            return redirect('accounts:signup')
+
+        user.regenerate_verification_token()
+        _send_verification_email(request, user)
+        messages.success(request, 'Verification email resent! Check your inbox.')
+        return redirect('accounts:login')
+    return render(request, 'accounts/resend_verification.html')

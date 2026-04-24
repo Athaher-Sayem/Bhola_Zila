@@ -2,9 +2,10 @@ from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, Permis
 from django.db import models
 import uuid
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin
-
+from django.utils import timezone
 from django.utils import timezone
 
+VERIFICATION_EXPIRY_HOURS = 24
 
 # ---------------- USER MANAGER ----------------
 class UserManager(BaseUserManager):
@@ -66,6 +67,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     blank=True,
     unique=True
     )
+    verification_token_created_at = models.DateTimeField(default=timezone.now)
     token_created_at = models.DateTimeField(null=True, blank=True)
 
     # ---------------- ADMIN VERIFICATION ----------------
@@ -115,6 +117,21 @@ class User(AbstractBaseUser, PermissionsMixin):
         self.password_reset_token = uuid.uuid4()
         self.password_reset_token_created_at = timezone.now()
         self.save(update_fields=['password_reset_token', 'password_reset_token_created_at'])
+
+    @property
+    def verification_expired(self):
+        if self.is_email_verified:
+            return False
+        expiry = self.verification_token_created_at + \
+                timezone.timedelta(hours=VERIFICATION_EXPIRY_HOURS)
+        return timezone.now() > expiry
+
+    def regenerate_verification_token(self):
+        import uuid
+        self.email_verification_token = uuid.uuid4()
+        self.verification_token_created_at = timezone.now()
+        self.save(update_fields=['email_verification_token',
+                                'verification_token_created_at'])
 
     # ---------------- TOKEN CHECK ----------------
     def is_token_expired(self):

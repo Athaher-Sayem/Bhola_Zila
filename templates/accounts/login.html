@@ -33,6 +33,15 @@
     <p style="text-align:center;margin-top:1.5rem;color:var(--muted);font-size:0.85rem">
       Don't have an account? <a href="{% url 'accounts:signup' %}" style="color:var(--accent)">Join BHOLA</a>
     </p>
+
+
+    <p style="text-align:center;margin-top:.5rem;font-size:.82rem;color:var(--muted)">
+       Didn't receive verification email?
+  <a href="{% url 'accounts:resend_verification' %}" style="color:var(--accent)">
+      Resend it
+   </a>
+</p>
+
   </div>
 </div>
 {% endblock %}
