@@ -18,6 +18,19 @@ import uuid
 
 
 
+def _log(user, action, target_type, target_id, target_name, request, details=""):
+    try:
+        from adminpanel.models import ActivityLog
+        ActivityLog.objects.create(
+            user=user, action=action,
+            target_type=target_type, target_id=str(target_id),
+            target_name=target_name, details=details,
+            ip_address=request.META.get('REMOTE_ADDR'),
+        )
+    except Exception:
+        pass  # Never crash the real request
+
+
 def compress_profile_photo(upload_file):
     try:
         from PIL import Image as PILImage
@@ -176,6 +189,7 @@ def login_view(request):
                 messages.error(request, 'Please verify your email first.')
                 return redirect('accounts:login')
             login(request, user)
+            _log(user, 'login', 'session', '', user.name, request)
             return redirect(request.GET.get('next', 'core:home'))
     else:
         form = LoginForm()
@@ -183,6 +197,8 @@ def login_view(request):
 
 
 def logout_view(request):
+    if request.user.is_authenticated:
+      _log(request.user, 'logout', 'session', '', request.user.name, request)
     logout(request)
     return redirect('core:home')
 

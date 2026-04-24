@@ -7,6 +7,21 @@ from .forms import EventForm
 import io, os
 
 
+def _log(user, action, target_type, target_id, target_name, request, details=""):
+    try:
+        from adminpanel.models import ActivityLog
+        ActivityLog.objects.create(
+            user=user, action=action,
+            target_type=target_type, target_id=str(target_id),
+            target_name=target_name, details=details,
+            ip_address=request.META.get('REMOTE_ADDR'),
+        )
+    except Exception:
+        pass  # Never crash the real request
+
+
+
+
 def compress_image(upload_file):
     """Compress any image to JPEG ≤ 1200×900 at quality 78."""
     try:
@@ -48,6 +63,7 @@ def event_create(request):
             event = form.save(commit=False)
             event.created_by = request.user
             event.save()
+            _log(request.user, 'create', 'event', event.pk, event.title, request)
             for raw_img in form.cleaned_data['images']:   # ← use form data, not request.FILES
                 compressed = compress_image(raw_img)
                 EventImage.objects.create(event=event, image=compressed)
@@ -65,6 +81,7 @@ def event_create(request):
 def event_delete(request, pk):
     event = get_object_or_404(Event, pk=pk)
     if request.user.is_admin or event.created_by == request.user:
+        _log(request.user, 'delete', 'event', event.pk, event.title, request)
         event.delete()
         messages.success(request, 'Event deleted.')
     return redirect('events:list')

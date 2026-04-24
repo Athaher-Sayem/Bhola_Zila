@@ -130,21 +130,17 @@
 
 <!-- MEMBERS SLIDER -->
 <section class="members-section">
-
   <div class="section-wrapper">
-
     <h2 class="section-label" style="text-align:center">Our Members</h2>
     <p class="section-sub" style="text-align:center">The people who make BZSF</p>
 
     <div class="members-slider-wrap">
       <div class="members-track">
-
         {% for member in members %}
         <div class="member-card portrait-style">
-
           <div class="member-avatar-wrap">
             {% if member.profile.photo %}
-              <img src="{{ member.profile.photo.url }}">
+              <img src="{{ member.profile.photo.url }}" alt="{{ member.name }}">
             {% else %}
               <span class="member-initial">{{ member.name|first|upper }}</span>
             {% endif %}
@@ -152,7 +148,14 @@
 
           <div class="member-info">
             <p class="member-name">{{ member.name }}</p>
-            <p class="member-role">{{ member.profile.designation }}</p>
+
+            {% if member.role == 'admin' %}
+              <p class="member-role" style="color:#fcd34d">👑 Admin</p>
+            {% elif member.role == 'second_admin' %}
+              <p class="member-role" style="color:#c4b5fd">⭐ {{ member.profile.designation|default:"2nd Admin" }}</p>
+            {% elif member.profile.designation %}
+              <p class="member-role">{{ member.profile.designation }}</p>
+            {% endif %}
 
             {% if member.profile.batch %}
               <p class="member-batch">Batch {{ member.profile.batch }}</p>
@@ -162,35 +165,11 @@
               <p class="member-bio">{{ member.profile.bio }}</p>
             {% endif %}
           </div>
-
         </div>
         {% endfor %}
-
-        {% comment %} <!-- duplicate loop -->
-        {% for member in members %}
-        <div class="member-card portrait-style">
-
-          <div class="member-avatar-wrap">
-            {% if member.profile.photo %}
-              <img src="{{ member.profile.photo.url }}">
-            {% else %}
-              <span class="member-initial">{{ member.name|first|upper }}</span>
-            {% endif %}
-          </div>
-
-          <div class="member-info">
-            <p class="member-name">{{ member.name }}</p>
-            <p class="member-role">{{ member.profile.designation }}</p>
-          </div>
-
-        </div>
-        {% endfor %} {% endcomment %}
-
       </div>
     </div>
-
   </div>
-
 </section>
 
 {% endblock %}
