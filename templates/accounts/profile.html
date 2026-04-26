@@ -19,6 +19,8 @@
       <div style="display:flex;gap:0.5rem;margin-top:0.75rem;flex-wrap:wrap">
         {% if request.user.role == 'admin' %}
           <span class="badge badge-gold">Admin</span>
+        {% elif request.user.role == 'advisor' %}
+          <span class="badge badge-mint">Advisor</span>
         {% elif request.user.role == 'second_admin' %}
           <span class="badge badge-purple">2nd Admin</span>
         {% else %}

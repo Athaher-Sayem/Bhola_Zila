@@ -3,6 +3,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from .models import Notice
 from .forms import NoticeForm
+from bhola.email_utils import notify_all_users
 
 
 def _log(user, action, target_type, target_id, target_name, request, details=""):
@@ -33,6 +34,11 @@ def notice_create(request):
             notice.created_by = request.user
             notice.save()
             _log(request.user, 'create', 'notice', notice.pk, notice.title, request)
+            notify_all_users(
+                    subject=f'[BZSF Notice] {notice.title}',
+                    message=f'A new notice has been posted on BZSF.\n\nTitle: {notice.title}\n\n{notice.description[:500]}\n\n— BZSF Team',
+                    audience=notice.email_audience,
+                )
             messages.success(request, 'Notice posted!')
             return redirect('notices:list')
     else:

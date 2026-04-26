@@ -83,8 +83,14 @@ class ForgotPasswordForm(forms.Form):
 
 
 class PasswordResetConfirmForm(forms.Form):
-    password1 = forms.CharField(widget=forms.PasswordInput(attrs={'placeholder': 'New Password'}))
-    password2 = forms.CharField(widget=forms.PasswordInput(attrs={'placeholder': 'Confirm'}))
+    password1 = forms.CharField(
+        label='New Password',
+        widget=forms.PasswordInput(attrs={'placeholder': 'Enter new password'})
+    )
+    password2 = forms.CharField(
+        label='Confirm New Password',
+        widget=forms.PasswordInput(attrs={'placeholder': 'Repeat new password'})
+    )
 
     def clean(self):
         cleaned_data = super().clean()

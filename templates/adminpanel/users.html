@@ -63,6 +63,8 @@
                 <span class="badge badge-gold">Admin</span>
               {% elif u.role == 'second_admin' %}
                 <span class="badge badge-purple">2nd Admin</span>
+              {% elif u.role == 'advisor' %}
+                <span class="badge badge-mint">Advisor</span>
               {% else %}
                 <span class="badge badge-accent">Member</span>
               {% endif %}

@@ -46,6 +46,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     ROLE_CHOICES = [
         ("admin", "Admin"),
         ("second_admin", "2nd Admin"),
+        ("advisor",      "Advisor"), 
         ("member", "Member"),
     ]
 
@@ -98,6 +99,10 @@ class User(AbstractBaseUser, PermissionsMixin):
     @property
     def is_second_admin(self):
         return self.role == "second_admin"
+    
+    @property
+    def is_advisor(self):
+        return self.role == 'advisor'
 
     @property
     def can_post(self):
@@ -159,5 +164,8 @@ class PreAdmin(models.Model):
 
     def __str__(self):
         return f"{self.name} - {self.designation}"
+
+
+
 
 

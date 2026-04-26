@@ -3,14 +3,15 @@
 {% block content %}
 <div class="page-wrapper">
   <div class="page-header" style="display:flex;justify-content:space-between;align-items:flex-end;flex-wrap:wrap;gap:1rem">
-    <div>
-      <h1>Gallery</h1>
-      <p>Moments from BHOLA's journey</p>
-    </div>
-    {% if user.is_authenticated and user.is_admin %}
-      <a href="{% url 'gallery:upload' %}" class="btn btn-primary">+ Upload Photos</a>
-    {% endif %}
-  </div>
+    <!-- Category filter tabs -->
+<div style="display:flex;gap:0.5rem;flex-wrap:wrap;margin-bottom:1.5rem">
+  <a href="{% url 'gallery:gallery' %}"
+     class="btn btn-sm {% if not active_category %}btn-primary{% else %}btn-glass{% endif %}">All</a>
+  {% for key, label in categories %}
+  <a href="{% url 'gallery:gallery' %}?category={{ key }}"
+     class="btn btn-sm {% if active_category == key %}btn-primary{% else %}btn-glass{% endif %}">{{ label }}</a>
+  {% endfor %}
+</div>
 
   {% if photos %}
   <div class="gallery-grid">

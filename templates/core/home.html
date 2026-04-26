@@ -56,40 +56,43 @@
 
 
   <!-- RIGHT SIDE IMAGE SLIDER -->
-  <div class="split-hero-right">
-    <div class="split-slider-track">
-
-      <div class="split-slider-card">
-        <img src="{% static 'img/slider/1.jpg' %}">
-      </div>
-
-      <div class="split-slider-card">
-        <img src="{% static 'img/slider/2.jpg' %}">
-      </div>
-
-      <div class="split-slider-card">
-        <img src="{% static 'img/slider/3.jpg' %}">
-      </div>
-
-      <div class="split-slider-card">
-        <img src="{% static 'img/slider/4.jpg' %}">
-      </div>
-
-      <div class="split-slider-card">
-        <img src="{% static 'img/slider/5.jpg' %}">
-      </div>
-
-      <!-- duplicate for loop effect -->
-      <div class="split-slider-card">
-        <img src="{% static 'img/slider/4.jpg' %}">
-      </div>
-
-      <div class="split-slider-card">
-        <img src="{% static 'img/slider/3.jpg' %}">
-      </div>
-
+  <div class="split-hero-right" style="position:relative">
+  <div class="split-slider-track">
+    {% for hi in hero_images %}
+    <div class="split-slider-card">
+      <img src="{{ hi.image.url }}" alt="BHOLA">
+      {% if user.is_admin %}
+      <form method="post" action="{% url 'core:hero_delete' hi.pk %}"
+            style="position:absolute;top:6px;right:6px;z-index:10"
+            onsubmit="return confirm('Delete this hero image?')">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-danger btn-xs">✕</button>
+      </form>
+      {% endif %}
     </div>
+    {% empty %}
+    <div class="split-slider-card" style="display:flex;align-items:center;justify-content:center;background:var(--bg2)">
+      <p style="color:var(--muted);font-size:0.85rem">No hero images yet</p>
+    </div>
+    {% endfor %}
+    {# Duplicate for seamless loop #}
+    {% for hi in hero_images %}
+    <div class="split-slider-card"><img src="{{ hi.image.url }}" alt="BHOLA"></div>
+    {% endfor %}
   </div>
+
+  {% if user.is_admin %}
+  <form method="post" action="{% url 'core:hero_upload' %}" enctype="multipart/form-data"
+        style="position:absolute;bottom:10px;left:50%;transform:translateX(-50%);z-index:10;display:flex;gap:0.5rem;align-items:center">
+    {% csrf_token %}
+    <label class="btn btn-primary btn-sm" style="cursor:pointer;margin:0">
+      + Upload
+      <input type="file" name="images" multiple accept="image/*" style="display:none"
+             onchange="this.closest('form').submit()">
+    </label>
+  </form>
+  {% endif %}
+</div>
 
 </section>
 <!-- ================= END SPLIT HERO ================= -->
@@ -110,17 +113,24 @@
   <div class="card-grid">
     {% for event in events %}
     <div class="glass content-card">
-
-      {% if event.images.first %}
-      <img src="{{ event.images.first.image.url }}"
-           style="width:100%;aspect-ratio:16/9;object-fit:cover;border-radius:10px;margin-bottom:1rem">
-      {% endif %}
-
-      <h3 class="card-title">{{ event.title }}</h3>
-      <p class="card-meta">{{ event.created_at|date:"d M Y" }}</p>
-      <p class="card-body">{{ event.description|truncatechars:110 }}</p>
-
-    </div>
+  {% if event.images.all %}
+  <div class="event-images" style="{% if event.images.count == 1 %}grid-template-columns:1fr{% endif %}">
+    {% for img in event.images.all|slice:":4" %}
+      <img src="{{ img.image.url }}" alt="{{ event.title }}"
+           onclick="window.location='{% url 'events:detail' event.pk %}'">
+    {% endfor %}
+  </div>
+  {% endif %}
+  <h3 class="card-title" style="margin-top:0.75rem">{{ event.title }}</h3>
+  <p class="card-meta">
+    {{ event.created_at|date:"d M Y" }}
+    {% if event.created_by %}&nbsp;·&nbsp; {{ event.created_by.name }}{% endif %}
+  </p>
+  <p class="card-body">{{ event.description|truncatechars:100 }}</p>
+  <div style="margin-top:auto;padding-top:0.75rem">
+    <a href="{% url 'events:detail' event.pk %}" class="btn btn-glass btn-sm">View Details →</a>
+  </div>
+</div>
     {% endfor %}
   </div>
 

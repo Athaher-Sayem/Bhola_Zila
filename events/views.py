@@ -5,7 +5,7 @@ from django.core.files.base import ContentFile
 from .models import Event, EventImage
 from .forms import EventForm
 import io, os
-
+from bhola.email_utils import notify_all_users
 
 def _log(user, action, target_type, target_id, target_name, request, details=""):
     try:
@@ -64,6 +64,11 @@ def event_create(request):
             event.created_by = request.user
             event.save()
             _log(request.user, 'create', 'event', event.pk, event.title, request)
+            notify_all_users(
+                subject=f'[BZSF Event] {event.title}',
+                message=f'A new event has been posted on BZSF.\n\nTitle: {event.title}\n\n{event.description[:500]}\n\n— BHOLA Team',
+                audience='all',
+            )
             for raw_img in form.cleaned_data['images']:   # ← use form data, not request.FILES
                 compressed = compress_image(raw_img)
                 EventImage.objects.create(event=event, image=compressed)

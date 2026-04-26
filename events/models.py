@@ -27,3 +27,22 @@ class EventImage(models.Model):
     event = models.ForeignKey(Event, on_delete=models.CASCADE, related_name='images')
     image = models.ImageField(upload_to=event_image_path)
     uploaded_at = models.DateTimeField(auto_now_add=True)
+
+
+
+class EventRegistration(models.Model):
+    STATUS_CHOICES = [
+        ('interested', 'Interested'),
+        ('registered', 'Registered'),
+    ]
+    event = models.ForeignKey(Event, on_delete=models.CASCADE, related_name='registrations')
+    user  = models.ForeignKey('accounts.User', on_delete=models.CASCADE, related_name='event_registrations')
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='registered')
+    registered_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        unique_together = ('event', 'user')
+        ordering = ['-registered_at']
+
+    def __str__(self):
+        return f'{self.user.name} → {self.event.title}'

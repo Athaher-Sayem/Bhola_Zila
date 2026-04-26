@@ -39,6 +39,8 @@
           <span class="badge badge-gold">Admin</span>
         {% elif member.role == 'second_admin' %}
           <span class="badge badge-purple">{{ member.profile.designation|default:"2nd Admin" }}</span>
+        {% elif request.user.role == 'advisor' %}
+          <span class="badge badge-mint">Advisor</span>
         {% elif member.profile.designation %}
           <span class="badge badge-accent">{{ member.profile.designation }}</span>
         {% endif %}
