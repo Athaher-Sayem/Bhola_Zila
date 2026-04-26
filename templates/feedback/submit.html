@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+{% block title %}Submit Feedback — BHOLA{% endblock %}
+{% block content %}
+<div class="page-wrapper" style="max-width:600px">
+  <div class="glass" style="padding:2.5rem">
+    <h1 class="form-title">💬 Feedback & Complaints</h1>
+    <p class="form-subtitle">Submit anonymously. Admins will review and respond.</p>
+    <form method="post" novalidate>
+      {% csrf_token %}
+      {% for field in form %}
+      <div class="form-group">
+        <label>{{ field.label }}</label>
+        {{ field }}
+        {% if field.errors %}<ul class="errorlist">{% for e in field.errors %}<li>{{ e }}</li>{% endfor %}</ul>{% endif %}
+      </div>
+      {% endfor %}
+      <p style="font-size:0.78rem;color:var(--muted);margin-bottom:1rem">
+        ℹ️ If you leave your name blank, your submission will be completely anonymous.
+      </p>
+      <button type="submit" class="btn btn-primary">Submit Feedback</button>
+    </form>
+  </div>
+</div>
+{% endblock %}

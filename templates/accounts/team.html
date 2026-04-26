@@ -47,6 +47,11 @@
         {% if member.profile.batch %}
           <span class="badge" style="background:var(--glass);border:1px solid var(--glass-border);color:var(--muted)">Batch {{ member.profile.batch }}</span>
         {% endif %}
+
+        {% if member.profile.blood_group %}
+  <span class="badge badge-mint" style="font-size:0.7rem">🩸 {{ member.profile.blood_group }}</span>
+{% endif %}
+
       </div>
 
       <p class="team-name">{{ member.name }}</p>

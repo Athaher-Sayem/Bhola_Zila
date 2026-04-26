@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+{% block title %}Feedback — BHOLA{% endblock %}
+{% block content %}
+<div class="page-wrapper" style="max-width:700px">
+  <a href="{% url 'feedback:list' %}" style="color:var(--muted);font-size:0.85rem">← Back to Feedback</a>
+  <div class="glass" style="padding:2rem;margin-top:1rem">
+    <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:0.75rem">
+      <h2 style="font-family:'Playfair Display',serif;color:var(--forest)">{{ item.subject }}</h2>
+      <span class="badge {% if item.status == 'resolved' %}badge-mint{% elif item.status == 'reviewed' %}badge-gold{% else %}badge-accent{% endif %}">{{ item.get_status_display }}</span>
+    </div>
+    <p style="color:var(--muted);font-size:0.78rem;margin-top:0.3rem">
+      {{ item.submitted_at|date:"d M Y, g:i A" }} &nbsp;·&nbsp;
+      {% if item.is_anonymous %}Anonymous{% else %}{{ item.submitter_name }}{% endif %}
+    </p>
+    <div class="divider"></div>
+    <p style="color:var(--text-2);line-height:1.8">{{ item.message }}</p>
+
+    {% if item.admin_response %}
+    <div style="margin-top:1.5rem;background:var(--forest-light);border-left:4px solid var(--mint);padding:1rem;border-radius:var(--radius-sm)">
+      <p style="font-size:0.78rem;font-weight:600;color:var(--forest);margin-bottom:0.3rem">ADMIN RESPONSE</p>
+      <p style="color:var(--text-2);font-size:0.9rem">{{ item.admin_response }}</p>
+    </div>
+    {% endif %}
+
+    <div class="divider"></div>
+    <form method="post" novalidate>
+      {% csrf_token %}
+      {% for field in form %}
+      <div class="form-group">
+        <label>{{ field.label }}</label>
+        {{ field }}
+      </div>
+      {% endfor %}
+      <button type="submit" class="btn btn-primary btn-sm">Save Response</button>
+    </form>
+  </div>
+</div>
+{% endblock %}

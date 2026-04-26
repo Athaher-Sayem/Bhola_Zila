@@ -98,3 +98,20 @@ class PasswordResetConfirmForm(forms.Form):
         if p1 and p2 and p1 != p2:
             raise forms.ValidationError('Passwords do not match.')
         return cleaned_data
+    
+
+
+class ProfileForm(forms.ModelForm):
+    class Meta:
+        model = Profile
+        fields = ['bio', 'address', 'batch', 'designation', 'blood_group', 'photo']   # ← add blood_group
+        widgets = {
+            'bio': forms.Textarea(attrs={'rows': 3, 'placeholder': 'Tell us about yourself...'}),
+            'address': forms.TextInput(attrs={'placeholder': 'Your Address'}),
+            'batch': forms.TextInput(attrs={'placeholder': 'e.g. 2021'}),
+            'designation': forms.TextInput(attrs={'placeholder': 'e.g. President'}),
+            'blood_group': forms.Select(),
+        }
+        labels = {
+            'blood_group': 'Blood Group',
+        }

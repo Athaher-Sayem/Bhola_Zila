@@ -1,0 +1,40 @@
+{% extends 'base.html' %}
+{% block title %}Feedback Management — BHOLA{% endblock %}
+{% block content %}
+<div class="page-wrapper">
+  <div class="page-header">
+    <h1>Feedback & Complaints</h1>
+    <p>Review and respond to member submissions</p>
+  </div>
+  <form method="get" class="search-bar">
+    <select name="status">
+      <option value="">All Status</option>
+      <option value="open"     {% if status_filter == 'open'     %}selected{% endif %}>Open</option>
+      <option value="reviewed" {% if status_filter == 'reviewed' %}selected{% endif %}>Reviewed</option>
+      <option value="resolved" {% if status_filter == 'resolved' %}selected{% endif %}>Resolved</option>
+    </select>
+    <button type="submit" class="btn btn-primary">Filter</button>
+  </form>
+  <div class="glass" style="overflow:hidden">
+    {% for item in items %}
+    <a href="{% url 'feedback:detail' item.pk %}" style="text-decoration:none;display:block">
+    <div class="notice-item">
+      <div style="flex:1">
+        <p class="notice-title">{{ item.subject }}</p>
+        <p class="notice-desc">{{ item.message|truncatechars:120 }}</p>
+        <p class="notice-date">
+          {{ item.submitted_at|date:"d M Y" }} &nbsp;·&nbsp;
+          {% if item.is_anonymous %}Anonymous{% else %}{{ item.submitter_name }}{% endif %}
+        </p>
+      </div>
+      <span class="badge {% if item.status == 'resolved' %}badge-mint{% elif item.status == 'reviewed' %}badge-gold{% else %}badge-accent{% endif %}">
+        {{ item.get_status_display }}
+      </span>
+    </div>
+    </a>
+    {% empty %}
+    <div style="padding:3rem;text-align:center"><p style="color:var(--muted)">No feedback submissions yet.</p></div>
+    {% endfor %}
+  </div>
+</div>
+{% endblock %}

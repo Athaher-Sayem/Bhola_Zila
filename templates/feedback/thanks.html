@@ -1,0 +1,12 @@
+{% extends 'base.html' %}
+{% block title %}Thank You — BHOLA{% endblock %}
+{% block content %}
+<div class="page-wrapper" style="text-align:center;padding-top:8rem">
+  <div class="glass" style="padding:3rem;max-width:500px;margin:0 auto">
+    <div style="font-size:3rem">🙏</div>
+    <h2 style="font-family:'Playfair Display',serif;color:var(--forest);margin:1rem 0 0.5rem">Thank You!</h2>
+    <p style="color:var(--muted)">Your feedback has been submitted. Admins will review it shortly.</p>
+    <a href="{% url 'core:home' %}" class="btn btn-primary" style="margin-top:1.5rem">Back to Home</a>
+  </div>
+</div>
+{% endblock %}

@@ -12,4 +12,5 @@ urlpatterns = [
     path('gallery/', include('gallery.urls')),
     path('panel/',    include('adminpanel.urls')),
     path('tasks/', include('tasks.urls')),
+    path('feedback/', include('feedback.urls')),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

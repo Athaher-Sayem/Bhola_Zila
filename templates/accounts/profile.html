@@ -86,6 +86,16 @@
       <p style="margin-top:0.25rem;color:var(--muted);line-height:1.7">{{ profile.bio }}</p>
     </div>
     {% endif %}
+
+    {% if profile.blood_group %}
+<div>
+  <p style="font-size:0.75rem;color:var(--muted);text-transform:uppercase;letter-spacing:0.05em">Blood Group</p>
+  <p style="margin-top:0.25rem">
+    <span class="badge badge-mint" style="font-size:0.9rem">🩸 {{ profile.blood_group }}</span>
+  </p>
+</div>
+{% endif %}
+
   </div>
   {% endif %}
 

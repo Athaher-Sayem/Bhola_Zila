@@ -32,6 +32,10 @@
       <li><a href="{% url 'gallery:gallery' %}">Gallery</a></li>
       <li><a href="{% url 'core:about' %}">About</a></li>
       {% if user.is_authenticated %}
+      <li><a href="{% url 'feedback:submit' %}">Feedback</a></li>
+{% if user.can_post %}
+<li><a href="{% url 'feedback:list' %}">📋 Feedback Inbox</a></li>
+{% endif %}
         <li><a href="{% url 'accounts:team' %}">Team</a></li>
         <li><a href="{% url 'accounts:profile' %}">Profile</a></li>
          {% if user.is_admin %}

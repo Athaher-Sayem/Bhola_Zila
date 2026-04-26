@@ -143,6 +143,15 @@ class User(AbstractBaseUser, PermissionsMixin):
         return timezone.now() > self.token_created_at + timezone.timedelta(minutes=5)
 
 
+BLOOD_GROUPS = [
+    ('A+', 'A+'), ('A-', 'A-'),
+    ('B+', 'B+'), ('B-', 'B-'),
+    ('O+', 'O+'), ('O-', 'O-'),
+    ('AB+', 'AB+'), ('AB-', 'AB-'),
+    ('', 'Not specified'),
+]
+
+
 class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='profile')
     bio = models.TextField(blank=True)
@@ -151,6 +160,7 @@ class Profile(models.Model):
     designation = models.CharField(max_length=100, blank=True)
     photo = models.ImageField(upload_to='profiles/', blank=True, null=True)
     pending_verification = models.BooleanField(default=False)
+    blood_group = models.CharField(max_length=5, choices=BLOOD_GROUPS, blank=True, default='') 
 
     def __str__(self):
         return f"Profile of {self.user.name}"
