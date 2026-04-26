@@ -42,15 +42,27 @@ def compress_image(upload_file):
         return upload_file   # fallback: save original
 
 
+# def event_list(request):
+#     events = Event.objects.prefetch_related('images').all()
+#     return render(request, 'events/list.html', {'events': events})
 def event_list(request):
+    query = request.GET.get('q', '')
     events = Event.objects.prefetch_related('images').all()
-    return render(request, 'events/list.html', {'events': events})
+    if query:
+        events = events.filter(title__icontains=query) | events.filter(description__icontains=query)
+    return render(request, 'events/list.html', {'events': events, 'query': query})
 
+# def event_detail(request, pk):
+#     event = get_object_or_404(Event, pk=pk)
+#     return render(request, 'events/detail.html', {'event': event})
 
 def event_detail(request, pk):
     event = get_object_or_404(Event, pk=pk)
-    return render(request, 'events/detail.html', {'event': event})
-
+    user_registration = None
+    if request.user.is_authenticated:
+        from .models import EventRegistration
+        user_registration = EventRegistration.objects.filter(event=event, user=request.user).first()
+    return render(request, 'events/detail.html', {'event': event, 'user_registration': user_registration})
 
 @login_required
 def event_create(request):
@@ -90,3 +102,37 @@ def event_delete(request, pk):
         event.delete()
         messages.success(request, 'Event deleted.')
     return redirect('events:list')
+
+
+
+@login_required
+def event_register(request, pk):
+    event = get_object_or_404(Event, pk=pk)
+    if request.method == 'POST':
+        status = request.POST.get('status', 'registered')
+        from .models import EventRegistration
+        EventRegistration.objects.get_or_create(event=event, user=request.user, defaults={'status': status})
+        messages.success(request, f'You have registered as "{status}" for this event.')
+    return redirect('events:detail', pk=pk)
+
+
+@login_required
+def event_unregister(request, pk):
+    event = get_object_or_404(Event, pk=pk)
+    if request.method == 'POST':
+        from .models import EventRegistration
+        EventRegistration.objects.filter(event=event, user=request.user).delete()
+        messages.info(request, 'Registration removed.')
+    return redirect('events:detail', pk=pk)
+
+
+@login_required
+def event_registrations(request, pk):
+    """Admin/poster view: list all registrants."""
+    event = get_object_or_404(Event, pk=pk)
+    if not (request.user.is_admin or event.created_by == request.user):
+        messages.error(request, 'Permission denied.')
+        return redirect('events:detail', pk=pk)
+    from .models import EventRegistration
+    regs = EventRegistration.objects.filter(event=event).select_related('user')
+    return render(request, 'events/registrations.html', {'event': event, 'regs': regs})

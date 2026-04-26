@@ -25,6 +25,49 @@
       <p style="color:var(--muted);line-height:1.85;font-size:0.95rem;margin-bottom:1.5rem">{{ event.description }}</p>
     {% endif %}
 
+
+    {% if user.is_authenticated %}
+<div class="divider"></div>
+{% load tz %}
+{% with user_reg=event.registrations.all %}
+{% with is_registered=event.registrations.filter %}
+<div style="display:flex;gap:0.75rem;align-items:center;flex-wrap:wrap;margin-bottom:1.5rem">
+
+  {# Check if current user is registered #}
+  {% if user in event.registrations.values_list|default:'' %}
+  {# Simple approach: pass is_registered from view #}
+  {% endif %}
+
+  {% if not user_registration %}
+  <form method="post" action="{% url 'events:register' event.pk %}">
+    {% csrf_token %}
+    <input type="hidden" name="status" value="registered">
+    <button type="submit" class="btn btn-primary btn-sm">✔ Register for this Event</button>
+  </form>
+  <form method="post" action="{% url 'events:register' event.pk %}">
+    {% csrf_token %}
+    <input type="hidden" name="status" value="interested">
+    <button type="submit" class="btn btn-glass btn-sm">⭐ Mark as Interested</button>
+  </form>
+  {% else %}
+  <span class="badge badge-mint">✔ You are {{ user_registration.status }}</span>
+  <form method="post" action="{% url 'events:unregister' event.pk %}">
+    {% csrf_token %}
+    <button type="submit" class="btn btn-danger btn-sm">Remove Registration</button>
+  </form>
+  {% endif %}
+
+  <span style="color:var(--muted);font-size:0.82rem">
+    {{ event.registrations.count }} registered
+  </span>
+
+  {% if user.is_admin or event.created_by == user %}
+  <a href="{% url 'events:registrations' event.pk %}" class="btn btn-glass btn-sm">View All Registrants</a>
+  {% endif %}
+</div>
+{% endwith %}{% endwith %}
+{% endif %}
+
     {% if event.images.all %}
     <div class="divider"></div>
     <p style="font-size:0.78rem;color:var(--muted);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:1rem">

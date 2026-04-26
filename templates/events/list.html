@@ -7,6 +7,11 @@
       <h1>Events</h1>
       <p>What's happening at BHOLA</p>
     </div>
+    <form method="get" class="search-bar">
+  <input type="text" name="q" value="{{ query }}" placeholder="🔍 Search events...">
+  <button type="submit" class="btn btn-primary">Search</button>
+  {% if query %}<a href="{% url 'events:list' %}" class="btn btn-glass">Clear</a>{% endif %}
+</form>
     {% if user.is_authenticated and user.can_post %}
       <a href="{% url 'events:create' %}" class="btn btn-primary">+ Post Event</a>
     {% endif %}

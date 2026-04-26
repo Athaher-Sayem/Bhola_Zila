@@ -18,9 +18,18 @@ def _log(user, action, target_type, target_id, target_name, request, details="")
     except Exception:
         pass  # Never crash the real request
 
+# def notice_list(request):
+#     notices = Notice.objects.select_related('created_by').all()
+#     return render(request, 'notices/list.html', {'notices': notices})
+
 def notice_list(request):
+    query = request.GET.get('q', '')
     notices = Notice.objects.select_related('created_by').all()
-    return render(request, 'notices/list.html', {'notices': notices})
+    if query:
+        notices = notices.filter(title__icontains=query) | notices.filter(description__icontains=query)
+    return render(request, 'notices/list.html', {'notices': notices, 'query': query})
+
+
 
 @login_required
 def notice_create(request):

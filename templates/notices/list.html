@@ -3,13 +3,22 @@
 {% block content %}
 <div class="page-wrapper">
   <div class="page-header" style="display:flex;justify-content:space-between;align-items:flex-end;flex-wrap:wrap;gap:1rem">
+    
     <div>
       <h1>Notice Board</h1>
       <p>Official announcements from BHOLA</p>
     </div>
+
+    <form method="get" class="search-bar">
+  <input type="text" name="q" value="{{ query }}" placeholder="🔍 Search notices...">
+  <button type="submit" class="btn btn-primary">Search</button>
+  {% if query %}<a href="{% url 'notices:list' %}" class="btn btn-glass">Clear</a>{% endif %}
+</form>
+
     {% if user.is_authenticated and user.can_post %}
       <a href="{% url 'notices:create' %}" class="btn btn-primary">+ Post Notice</a>
     {% endif %}
+    
   </div>
 
   {% if notices %}
