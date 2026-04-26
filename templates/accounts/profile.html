@@ -90,4 +90,24 @@
   {% endif %}
 
 </div>
+
+<!-- Task History -->
+<div class="glass" style="padding:2rem;margin-top:1.5rem">
+  <h3 style="font-family:'Playfair Display',serif;font-size:1.2rem;color:var(--forest);margin-bottom:1rem">Task History</h3>
+  {% with tasks=request.user.assigned_tasks.all %}
+  {% if tasks %}
+  <div style="display:flex;flex-direction:column;gap:0.5rem">
+    {% for task in tasks|slice:":10" %}
+    <div style="display:flex;justify-content:space-between;align-items:center;padding:0.65rem 1rem;background:var(--bg2);border-radius:var(--radius-sm)">
+      <a href="{% url 'tasks:detail' task.pk %}" style="font-size:0.9rem;font-weight:500;color:var(--forest)">{{ task.title }}</a>
+      <span class="badge {% if task.status == 'done' %}badge-mint{% elif task.status == 'in_progress' %}badge-gold{% else %}badge-accent{% endif %}">{{ task.get_status_display }}</span>
+    </div>
+    {% endfor %}
+  </div>
+  {% else %}
+  <p style="color:var(--muted);font-size:0.88rem">No tasks assigned yet.</p>
+  {% endif %}
+  {% endwith %}
+</div>
+
 {% endblock %}

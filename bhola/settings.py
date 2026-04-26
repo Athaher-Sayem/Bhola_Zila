@@ -24,6 +24,8 @@ INSTALLED_APPS = [
     'events',
     'notices',
     'gallery',
+    'tasks',
+    'feedback',
 ]
 
 MIDDLEWARE = [

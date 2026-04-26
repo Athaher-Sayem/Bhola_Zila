@@ -1,0 +1,50 @@
+{% extends 'base.html' %}
+{% block title %}Tasks — BHOLA{% endblock %}
+{% block content %}
+<div class="page-wrapper">
+  <div class="page-header" style="display:flex;justify-content:space-between;align-items:flex-end;flex-wrap:wrap;gap:1rem">
+    <div><h1>Tasks</h1><p>Your assignments and work items</p></div>
+    {% if user.can_post %}
+    <a href="{% url 'tasks:create' %}" class="btn btn-primary">+ Assign Task</a>
+    {% endif %}
+  </div>
+
+  <h3 style="font-family:'Playfair Display',serif;color:var(--forest);margin-bottom:1rem">My Tasks</h3>
+  {% if my_tasks %}
+  <div class="card-grid" style="margin-bottom:2rem">
+    {% for task in my_tasks %}
+    <a href="{% url 'tasks:detail' task.pk %}" style="text-decoration:none">
+    <div class="glass content-card" style="border-left:4px solid {% if task.status == 'done' %}var(--mint){% elif task.is_overdue %}var(--danger){% else %}var(--warning){% endif %}">
+      <h4 class="card-title">{{ task.title }}</h4>
+      <p class="card-meta">
+        Assigned by {{ task.assigned_by.name|default:"—" }}
+        {% if task.deadline %}&nbsp;·&nbsp; Due {{ task.deadline|date:"d M Y" }}{% endif %}
+      </p>
+      <span class="badge {% if task.status == 'done' %}badge-mint{% elif task.status == 'in_progress' %}badge-gold{% else %}badge-accent{% endif %}">
+        {{ task.get_status_display }}
+      </span>
+      {% if task.is_overdue %}<span class="badge" style="background:#fef2f2;color:#991b1b;border:1px solid #fca5a5">⚠ Overdue</span>{% endif %}
+    </div>
+    </a>
+    {% endfor %}
+  </div>
+  {% else %}
+  <div class="glass" style="padding:2rem;text-align:center;margin-bottom:2rem"><p style="color:var(--muted)">No tasks assigned to you.</p></div>
+  {% endif %}
+
+  {% if created_tasks %}
+  <h3 style="font-family:'Playfair Display',serif;color:var(--forest);margin-bottom:1rem">Tasks I Created</h3>
+  <div class="card-grid">
+    {% for task in created_tasks %}
+    <a href="{% url 'tasks:detail' task.pk %}" style="text-decoration:none">
+    <div class="glass content-card">
+      <h4 class="card-title">{{ task.title }}</h4>
+      <p class="card-meta">→ {{ task.assigned_to.name }}</p>
+      <span class="badge {% if task.status == 'done' %}badge-mint{% elif task.status == 'in_progress' %}badge-gold{% else %}badge-accent{% endif %}">{{ task.get_status_display }}</span>
+    </div>
+    </a>
+    {% endfor %}
+  </div>
+  {% endif %}
+</div>
+{% endblock %}

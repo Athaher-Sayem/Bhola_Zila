@@ -40,6 +40,9 @@
         {% if user.can_post %}
           <li><a href="{% url 'accounts:verify_members' %}">Verify</a></li>
         {% endif %}
+        {% if user.is_authenticated %}
+  <li><a href="{% url 'tasks:list' %}">Tasks</a></li>
+{% endif %}
         <li><a href="{% url 'accounts:logout' %}" class="btn btn-glass btn-sm">Logout</a></li>
       {% else %}
         <li><a href="{% url 'accounts:login' %}" class="btn btn-glass btn-sm">Login</a></li>

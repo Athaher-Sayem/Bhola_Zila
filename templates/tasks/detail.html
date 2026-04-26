@@ -1,0 +1,47 @@
+{% extends 'base.html' %}
+{% block title %}{{ task.title }} — BHOLA{% endblock %}
+{% block content %}
+<div class="page-wrapper" style="max-width:700px">
+  <a href="{% url 'tasks:list' %}" style="color:var(--muted);font-size:0.85rem">← Back to Tasks</a>
+  <div class="glass" style="padding:2rem;margin-top:1rem">
+    <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:1rem">
+      <div>
+        <h1 style="font-family:'Playfair Display',serif;font-size:1.6rem;color:var(--forest)">{{ task.title }}</h1>
+        <p style="color:var(--muted);font-size:0.82rem;margin-top:0.3rem">
+          Assigned by {{ task.assigned_by.name|default:"—" }} on {{ task.created_at|date:"d M Y" }}
+          {% if task.deadline %}&nbsp;·&nbsp; Due <strong>{{ task.deadline|date:"d M Y" }}</strong>{% endif %}
+        </p>
+      </div>
+      <span class="badge {% if task.status == 'done' %}badge-mint{% elif task.status == 'in_progress' %}badge-gold{% else %}badge-accent{% endif %}" style="font-size:0.85rem;padding:0.4rem 1rem">
+        {{ task.get_status_display }}
+      </span>
+    </div>
+
+    {% if task.description %}
+    <div class="divider"></div>
+    <p style="color:var(--text-2);line-height:1.8">{{ task.description }}</p>
+    {% endif %}
+
+    {% if task.completed_at %}
+    <p style="color:var(--success);font-size:0.82rem;margin-top:1rem">✔ Completed on {{ task.completed_at|date:"d M Y, g:i A" }}</p>
+    {% endif %}
+
+    {% if task.assigned_to == user or user.is_admin %}
+    <div class="divider"></div>
+    <form method="post" action="{% url 'tasks:update_status' task.pk %}" style="display:flex;gap:0.75rem;align-items:center;flex-wrap:wrap">
+      {% csrf_token %}
+      {{ form.status }}
+      <button type="submit" class="btn btn-primary btn-sm">Update Status</button>
+    </form>
+    {% endif %}
+
+    {% if user.is_admin or task.assigned_by == user %}
+    <div class="divider"></div>
+    <form method="post" action="{% url 'tasks:delete' task.pk %}" onsubmit="return confirm('Delete this task?')">
+      {% csrf_token %}
+      <button type="submit" class="btn btn-danger btn-sm">Delete Task</button>
+    </form>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

@@ -11,4 +11,5 @@ urlpatterns = [
     path('notices/', include('notices.urls')),
     path('gallery/', include('gallery.urls')),
     path('panel/',    include('adminpanel.urls')),
+    path('tasks/', include('tasks.urls')),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
