@@ -78,7 +78,7 @@ def event_create(request):
             _log(request.user, 'create', 'event', event.pk, event.title, request)
             notify_all_users(
                 subject=f'[BZSF Event] {event.title}',
-                message=f'A new event has been posted on BZSF.\n\nTitle: {event.title}\n\n{event.description[:500]}\n\n— BHOLA Team',
+                message=f'A new event has been posted on BZSF.\n\nTitle: {event.title}\n\n{event.description[:500]}\n\n— BZSF Team',
                 audience='all',
             )
             for raw_img in form.cleaned_data['images']:   # ← use form data, not request.FILES

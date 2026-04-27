@@ -28,11 +28,13 @@
     <ul class="nav-links">
       <li><a href="{% url 'core:home' %}">Home</a></li>
       <li><a href="{% url 'events:list' %}">Events</a></li>
-      <li><a href="{% url 'notices:list' %}">Notices</a></li>
+      
+      
       <li><a href="{% url 'gallery:gallery' %}">Gallery</a></li>
       <li><a href="{% url 'core:about' %}">About</a></li>
       {% if user.is_authenticated %}
       <li><a href="{% url 'feedback:submit' %}">Feedback</a></li>
+      <li><a href="{% url 'notices:list' %}">Notices</a></li>
 {% if user.can_post %}
 <li><a href="{% url 'feedback:list' %}">📋 Feedback Inbox</a></li>
 {% endif %}

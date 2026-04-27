@@ -22,6 +22,7 @@ def _log(user, action, target_type, target_id, target_name, request, details="")
 #     notices = Notice.objects.select_related('created_by').all()
 #     return render(request, 'notices/list.html', {'notices': notices})
 
+@login_required
 def notice_list(request):
     query = request.GET.get('q', '')
     notices = Notice.objects.select_related('created_by').all()
