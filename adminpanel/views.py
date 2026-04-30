@@ -3,12 +3,12 @@ from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.utils import timezone
 from functools import wraps
-
-from accounts.models import User, Profile
+from accounts.models import PendingProfileChange
 from events.models import Event
 from notices.models import Notice
 from gallery.models import GalleryPhoto
 from .models import ActivityLog
+from accounts.models import User, Profile, PendingProfileChange
 
 
 # ── decorator ──────────────────────────────────────────────────────────────
@@ -45,7 +45,10 @@ def dashboard(request):
     stats = {
         'total_users': User.objects.count(),
         'verified_users': User.objects.filter(is_verified=True).count(),
-        'pending_verification': Profile.objects.filter(pending_verification=True).count(),
+        'pending_accounts': User.objects.filter(
+            is_email_verified=True, account_approved=False, account_rejected=False
+        ).count(),
+        'pending_profiles': PendingProfileChange.objects.filter(status='pending').count(),
         'unverified_email': User.objects.filter(is_email_verified=False).count(),
         'total_events': Event.objects.count(),
         'total_notices': Notice.objects.count(),
@@ -84,7 +87,25 @@ def user_action(request, pk):
     user = get_object_or_404(User, pk=pk)
     action = request.POST.get('action')
 
-    if action == 'change_role':
+    if action == 'approve_account':
+        user.account_approved = True
+        user.is_verified = True
+        user.account_rejected = False
+        user.rejection_reason = ''
+        user.save()
+        _log(request.user, 'verify', 'user', user.pk, user.name, request, details='Account approved')
+        messages.success(request, f'{user.name}\'s account approved.')
+
+    elif action == 'reject_account':
+        reason = request.POST.get('rejection_reason', '')
+        user.account_rejected = True
+        user.account_approved = False
+        user.rejection_reason = reason
+        user.save()
+        _log(request.user, 'edit', 'user', user.pk, user.name, request, details=f'Account rejected: {reason}')
+        messages.info(request, f'{user.name}\'s account rejected.')
+
+    elif action == 'change_role':
         new_role = request.POST.get('role')
         if new_role in dict(User.ROLE_CHOICES):
             old_role = user.role
@@ -172,4 +193,50 @@ def logs_view(request):
         'logs': logs[:300],
         'action_choices': ActivityLog.ACTION_CHOICES,
         'target_types': ActivityLog.objects.values_list('target_type', flat=True).distinct(),
+    })
+
+
+
+@admin_required
+def profile_changes_view(request):
+    """Admin page: review all profile change submissions."""
+    from accounts.models import PendingProfileChange
+    status_filter = request.GET.get('status', 'pending')
+    changes = PendingProfileChange.objects.select_related(
+        'user', 'user__profile', 'reviewed_by'
+    )
+    if status_filter:
+        changes = changes.filter(status=status_filter)
+    changes = changes[:200]
+
+    if request.method == 'POST':
+        from django.utils import timezone
+        change_id = request.POST.get('change_id')
+        action = request.POST.get('action')
+        change = get_object_or_404(PendingProfileChange, pk=change_id)
+
+        change.reviewed_by = request.user
+        change.reviewed_at = timezone.now()
+
+        if action == 'approve':
+            change.status = 'approved'
+            change.save()
+            change.apply_to_profile()
+            _log(request.user, 'verify', 'profile', change.pk, change.user.name, request)
+            messages.success(request, f'Profile update for {change.user.name} approved and applied.')
+
+        elif action == 'reject':
+            reason = request.POST.get('rejection_reason', '')
+            change.status = 'rejected'
+            change.rejection_reason = reason
+            change.save()
+            _log(request.user, 'edit', 'profile', change.pk, change.user.name, request,
+                 details=f'Profile rejected: {reason}')
+            messages.info(request, f'Profile update for {change.user.name} rejected.')
+
+        return redirect('adminpanel:profile_changes')
+
+    return render(request, 'adminpanel/profile_changes.html', {
+        'changes': changes,
+        'status_filter': status_filter,
     })

@@ -1,7 +1,10 @@
 from django import forms
 from django.contrib.auth.forms import AuthenticationForm
-from .models import User, Profile
 from django.contrib.auth import password_validation
+from .models import User, Profile, BLOOD_GROUPS
+
+
+
 
 class SignupForm(forms.ModelForm):
     password1 = forms.CharField(widget=forms.PasswordInput(attrs={'placeholder': 'Password'}), label='Password')
@@ -36,18 +39,6 @@ class SignupForm(forms.ModelForm):
 class LoginForm(AuthenticationForm):
     username = forms.EmailField(widget=forms.EmailInput(attrs={'placeholder': 'Email Address'}), label='Email')
     password = forms.CharField(widget=forms.PasswordInput(attrs={'placeholder': 'Password'}))
-
-
-class ProfileForm(forms.ModelForm):
-    class Meta:
-        model = Profile
-        fields = ['bio', 'address', 'batch', 'designation', 'photo']
-        widgets = {
-            'bio': forms.Textarea(attrs={'rows': 3, 'placeholder': 'Tell us about yourself...'}),
-            'address': forms.TextInput(attrs={'placeholder': 'Your Address'}),
-            'batch': forms.TextInput(attrs={'placeholder': 'e.g. 2021'}),
-            'designation': forms.TextInput(attrs={'placeholder': 'e.g. President'}),
-        }
 
 
 class ChangePasswordForm(forms.Form):
@@ -101,17 +92,37 @@ class PasswordResetConfirmForm(forms.Form):
     
 
 
-class ProfileForm(forms.ModelForm):
-    class Meta:
-        model = Profile
-        fields = ['bio', 'address', 'batch', 'designation', 'blood_group', 'photo']   # ← add blood_group
-        widgets = {
-            'bio': forms.Textarea(attrs={'rows': 3, 'placeholder': 'Tell us about yourself...'}),
-            'address': forms.TextInput(attrs={'placeholder': 'Your Address'}),
-            'batch': forms.TextInput(attrs={'placeholder': 'e.g. 2021'}),
-            'designation': forms.TextInput(attrs={'placeholder': 'e.g. President'}),
-            'blood_group': forms.Select(),
-        }
-        labels = {
-            'blood_group': 'Blood Group',
-        }
+class ProfileForm(forms.Form):
+    """
+    Standalone form — does NOT save directly to Profile.
+    Data goes to PendingProfileChange for admin review instead.
+    """
+    bio = forms.CharField(
+        required=False,
+        widget=forms.Textarea(attrs={'rows': 3, 'placeholder': 'Tell us about yourself...'}),
+        label='Bio'
+    )
+    address = forms.CharField(
+        required=False,
+        widget=forms.TextInput(attrs={'placeholder': 'Your Address'}),
+        label='Address'
+    )
+    batch = forms.CharField(
+        required=False,
+        widget=forms.TextInput(attrs={'placeholder': 'e.g. 2021'}),
+        label='Batch'
+    )
+    designation = forms.CharField(
+        required=False,
+        widget=forms.TextInput(attrs={'placeholder': 'e.g. President'}),
+        label='Designation'
+    )
+    blood_group = forms.ChoiceField(
+        choices=BLOOD_GROUPS,
+        required=False,
+        label='Blood Group'
+    )
+    photo = forms.ImageField(
+        required=False,
+        label='Profile Photo'
+    )

@@ -2,6 +2,8 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.utils import timezone
+from django.core.mail import send_mail
+from django.conf import settings
 from .models import Task
 from .forms import TaskForm, TaskStatusForm
 
@@ -22,6 +24,32 @@ def task_list(request):
     })
 
 
+def _send_task_email(task):
+    """Send notification email to the assigned user."""
+    try:
+        deadline_str = task.deadline.strftime('%d %B %Y') if task.deadline else 'No deadline set'
+        assigned_by = task.assigned_by.name if task.assigned_by else 'Admin'
+        body = (
+            f'Hi {task.assigned_to.name},\n\n'
+            f'A new task has been assigned to you on BZSF.\n\n'
+            f'Task: {task.title}\n'
+            f'Assigned by: {assigned_by}\n'
+            f'Deadline: {deadline_str}\n'
+        )
+        if task.description:
+            body += f'\nDetails:\n{task.description}\n'
+        body += '\nLog in to BZSF to view and update this task.\n\nDIU BZSF Team'
+        send_mail(
+            f'[BZSF] New Task Assigned: {task.title}',
+            body,
+            settings.DEFAULT_FROM_EMAIL,
+            [task.assigned_to.email],
+            fail_silently=True,
+        )
+    except Exception:
+        pass
+
+
 @login_required
 def task_create(request):
     if not request.user.can_post:
@@ -33,7 +61,8 @@ def task_create(request):
             task = form.save(commit=False)
             task.assigned_by = request.user
             task.save()
-            messages.success(request, f'Task assigned to {task.assigned_to.name}.')
+            _send_task_email(task)
+            messages.success(request, f'Task assigned to {task.assigned_to.name}. They have been notified by email.')
             return redirect('tasks:list')
     else:
         form = TaskForm()

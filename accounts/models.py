@@ -72,7 +72,16 @@ class User(AbstractBaseUser, PermissionsMixin):
     token_created_at = models.DateTimeField(null=True, blank=True)
 
     # ---------------- ADMIN VERIFICATION ----------------
+    # ---------------- ADMIN VERIFICATION ----------------
     is_verified = models.BooleanField(default=False)
+
+    # ---------------- ACCOUNT APPROVAL (NEW) ----------------
+    account_approved = models.BooleanField(
+        default=False,
+        help_text="Admin must approve the account after email verification"
+    )
+    account_rejected = models.BooleanField(default=False)
+    rejection_reason = models.CharField(max_length=500, blank=True)
 
     # ---------------- STATUS ----------------
     is_active = models.BooleanField(default=True)
@@ -92,9 +101,15 @@ class User(AbstractBaseUser, PermissionsMixin):
         return f"{self.name} ({self.email})"
 
     # ---------------- HELPERS ----------------
+    
     @property
     def is_admin(self):
         return self.role == "admin"
+
+    @property
+    def has_full_access(self):
+        """True only when email verified AND admin-approved."""
+        return self.is_email_verified and self.account_approved
 
     @property
     def is_second_admin(self):
@@ -164,6 +179,62 @@ class Profile(models.Model):
 
     def __str__(self):
         return f"Profile of {self.user.name}"
+
+
+class PendingProfileChange(models.Model):
+    """
+    Stores submitted-but-not-yet-approved profile changes.
+    Admin reviews and either applies or discards them.
+    The live Profile is NEVER touched until approved.
+    """
+    STATUS_CHOICES = [
+        ('pending', 'Pending Review'),
+        ('approved', 'Approved'),
+        ('rejected', 'Rejected'),
+    ]
+
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='pending_profile_changes')
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='pending')
+    rejection_reason = models.CharField(max_length=500, blank=True)
+    submitted_at = models.DateTimeField(auto_now_add=True)
+    reviewed_at = models.DateTimeField(null=True, blank=True)
+    reviewed_by = models.ForeignKey(
+        User, on_delete=models.SET_NULL, null=True, blank=True,
+        related_name='reviewed_profile_changes'
+    )
+
+    # Fields that may be changed — all nullable so we only store what changed
+    new_bio = models.TextField(blank=True, null=True)
+    new_address = models.CharField(max_length=255, blank=True, null=True)
+    new_batch = models.CharField(max_length=50, blank=True, null=True)
+    new_designation = models.CharField(max_length=100, blank=True, null=True)
+    new_blood_group = models.CharField(max_length=5, blank=True, null=True)
+    new_photo = models.ImageField(upload_to='profile_pending/', blank=True, null=True)
+
+    class Meta:
+        ordering = ['-submitted_at']
+
+    def __str__(self):
+        return f"Profile change by {self.user.name} [{self.status}]"
+
+    def apply_to_profile(self):
+        """Apply this pending change to the live profile. Only call after admin approval."""
+        profile = self.user.profile
+        if self.new_bio is not None:
+            profile.bio = self.new_bio
+        if self.new_address is not None:
+            profile.address = self.new_address
+        if self.new_batch is not None:
+            profile.batch = self.new_batch
+        if self.new_designation is not None:
+            profile.designation = self.new_designation
+        if self.new_blood_group is not None:
+            profile.blood_group = self.new_blood_group
+        if self.new_photo:
+            profile.photo = self.new_photo
+        profile.save()
+
 
 
 class PreAdmin(models.Model):

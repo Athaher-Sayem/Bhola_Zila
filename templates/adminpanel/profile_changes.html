@@ -1,0 +1,131 @@
+{% extends 'base.html' %}
+{% block title %}Profile Changes — Admin Panel{% endblock %}
+{% block content %}
+<div class="page-wrapper">
+
+  <div class="panel-header">
+    <div>
+      <h1 class="panel-title">👤 Profile Change Requests</h1>
+      <p class="panel-subtitle">Review and approve or reject member profile updates</p>
+    </div>
+    <div class="panel-nav">
+      <a href="{% url 'adminpanel:dashboard' %}" class="panel-nav-btn">Dashboard</a>
+      <a href="{% url 'adminpanel:users' %}" class="panel-nav-btn">Users</a>
+      <a href="{% url 'adminpanel:profile_changes' %}" class="panel-nav-btn active">Profile Changes</a>
+      <a href="{% url 'adminpanel:content' %}" class="panel-nav-btn">Content</a>
+      <a href="{% url 'adminpanel:logs' %}" class="panel-nav-btn">Logs</a>
+    </div>
+  </div>
+
+  <!-- Status Filter -->
+  <div style="display:flex;gap:0.5rem;margin-bottom:1.5rem;flex-wrap:wrap">
+    <a href="?status=pending"  class="btn btn-sm {% if status_filter == 'pending'  %}btn-primary{% else %}btn-glass{% endif %}">⏳ Pending</a>
+    <a href="?status=approved" class="btn btn-sm {% if status_filter == 'approved' %}btn-primary{% else %}btn-glass{% endif %}">✓ Approved</a>
+    <a href="?status=rejected" class="btn btn-sm {% if status_filter == 'rejected' %}btn-primary{% else %}btn-glass{% endif %}">✕ Rejected</a>
+    <a href="?" class="btn btn-sm btn-glass">All</a>
+  </div>
+
+  {% if changes %}
+    {% for change in changes %}
+    <div class="verify-card" style="margin-bottom:1rem">
+      <div class="verify-card-header">
+        <div class="verify-avatar">
+          {% if change.user.profile.photo %}
+            <img src="{{ change.user.profile.photo.url }}" alt="{{ change.user.name }}">
+          {% else %}
+            {{ change.user.name|first|upper }}
+          {% endif %}
+        </div>
+        <div class="verify-info">
+          <h4>{{ change.user.name }}</h4>
+          <p>{{ change.user.email }}</p>
+          <p style="margin-top:0.3rem;font-size:0.78rem;color:var(--muted)">
+            Submitted {{ change.submitted_at|date:"d M Y, g:i A" }}
+            {% if change.reviewed_by %}&nbsp;·&nbsp; Reviewed by {{ change.reviewed_by.name }} on {{ change.reviewed_at|date:"d M Y" }}{% endif %}
+          </p>
+        </div>
+        <div class="verify-actions">
+          <span class="badge {% if change.status == 'approved' %}badge-mint{% elif change.status == 'rejected' %}badge-rejected{% else %}badge-pending{% endif %}">
+            {{ change.get_status_display }}
+          </span>
+          {% if change.status == 'pending' %}
+          <form method="post">
+            {% csrf_token %}
+            <input type="hidden" name="change_id" value="{{ change.pk }}">
+            <input type="hidden" name="action" value="approve">
+            <button type="submit" class="btn btn-success btn-sm">✓ Apply</button>
+          </form>
+          <button type="button" class="btn btn-danger btn-sm" onclick="toggleReject('r-{{ change.pk }}')">✕ Reject</button>
+          {% endif %}
+        </div>
+      </div>
+
+      <!-- Diff display -->
+      <div class="change-diff">
+        {% if change.new_bio is not None %}
+        <div class="diff-old"><div class="diff-label">Bio (current)</div><div class="diff-value">{{ change.user.profile.bio|default:"(empty)" }}</div></div>
+        <div class="diff-new"><div class="diff-label">Bio (new)</div><div class="diff-value">{{ change.new_bio|default:"(empty)" }}</div></div>
+        {% endif %}
+        {% if change.new_designation is not None %}
+        <div class="diff-old"><div class="diff-label">Designation (current)</div><div class="diff-value">{{ change.user.profile.designation|default:"—" }}</div></div>
+        <div class="diff-new"><div class="diff-label">Designation (new)</div><div class="diff-value">{{ change.new_designation|default:"—" }}</div></div>
+        {% endif %}
+        {% if change.new_batch is not None %}
+        <div class="diff-old"><div class="diff-label">Batch (current)</div><div class="diff-value">{{ change.user.profile.batch|default:"—" }}</div></div>
+        <div class="diff-new"><div class="diff-label">Batch (new)</div><div class="diff-value">{{ change.new_batch|default:"—" }}</div></div>
+        {% endif %}
+        {% if change.new_address is not None %}
+        <div class="diff-old"><div class="diff-label">Address (current)</div><div class="diff-value">{{ change.user.profile.address|default:"—" }}</div></div>
+        <div class="diff-new"><div class="diff-label">Address (new)</div><div class="diff-value">{{ change.new_address|default:"—" }}</div></div>
+        {% endif %}
+        {% if change.new_blood_group is not None %}
+        <div class="diff-old"><div class="diff-label">Blood Group (current)</div><div class="diff-value">{{ change.user.profile.blood_group|default:"—" }}</div></div>
+        <div class="diff-new"><div class="diff-label">Blood Group (new)</div><div class="diff-value">{{ change.new_blood_group|default:"—" }}</div></div>
+        {% endif %}
+        {% if change.new_photo %}
+        <div style="grid-column:1/-1">
+          <div class="diff-label" style="margin-bottom:0.5rem">New Photo</div>
+          <img src="{{ change.new_photo.url }}" style="width:72px;height:72px;border-radius:50%;object-fit:cover;border:2px solid var(--card-border)">
+        </div>
+        {% endif %}
+        {% if change.status == 'rejected' and change.rejection_reason %}
+        <div style="grid-column:1/-1;background:#fef2f2;border-radius:var(--radius-sm);padding:0.75rem;border:1px solid #fca5a5">
+          <div class="diff-label" style="color:#991b1b">Rejection Reason</div>
+          <div class="diff-value" style="color:#991b1b">{{ change.rejection_reason }}</div>
+        </div>
+        {% endif %}
+      </div>
+
+      <!-- Reject panel -->
+      {% if change.status == 'pending' %}
+      <div id="r-{{ change.pk }}" style="display:none;margin-top:1rem;padding-top:1rem;border-top:1px solid var(--card-border)">
+        <form method="post" style="display:flex;gap:0.75rem;align-items:flex-end;flex-wrap:wrap">
+          {% csrf_token %}
+          <input type="hidden" name="change_id" value="{{ change.pk }}">
+          <input type="hidden" name="action" value="reject">
+          <div style="flex:1;min-width:200px">
+            <label style="font-size:0.78rem;color:var(--muted);font-weight:600;display:block;margin-bottom:0.4rem">REASON (optional)</label>
+            <input type="text" name="rejection_reason" placeholder="Why are you rejecting this?" style="margin:0">
+          </div>
+          <button type="submit" class="btn btn-danger btn-sm">Confirm Reject</button>
+        </form>
+      </div>
+      {% endif %}
+    </div>
+    {% endfor %}
+  {% else %}
+  <div class="glass" style="padding:3rem;text-align:center">
+    <p style="font-size:2rem;margin-bottom:0.75rem">📭</p>
+    <p style="color:var(--muted);font-size:1rem;font-weight:600">No profile changes found</p>
+  </div>
+  {% endif %}
+</div>
+{% block extra_js %}
+<script>
+function toggleReject(id) {
+  const el = document.getElementById(id);
+  el.style.display = el.style.display === 'none' ? 'block' : 'none';
+}
+</script>
+{% endblock %}
+{% endblock %}

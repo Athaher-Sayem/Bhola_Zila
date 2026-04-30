@@ -9,7 +9,7 @@
 
   <!-- Search + Filter -->
   <form method="get" class="search-bar">
-    <input type="text" name="q" value="{{ request.GET.q }}" placeholder="🔍 Search members by name...">
+    <input type="text" name="q" value="{{ request.GET.q }}" placeholder="🔍 Search members...">
     <select name="designation">
       <option value="">All Designations</option>
       {% for d in designations %}
@@ -23,48 +23,56 @@
   </form>
 
   {% if members %}
-  <div class="card-grid">
+  <div class="team-grid">
     {% for member in members %}
-    <div class="glass team-card">
-      {% if member.profile.photo %}
-        <img src="{{ member.profile.photo.url }}" alt="{{ member.name }}" class="team-avatar">
-      {% else %}
-        <div class="team-avatar" style="display:flex;align-items:center;justify-content:center;font-family:'Playfair Display',serif;font-size:2rem;font-weight:700;color:var(--muted)">
-          {{ member.name|first }}
-        </div>
-      {% endif %}
-
-      <div style="display:flex;justify-content:center;gap:0.4rem;margin-bottom:0.75rem;flex-wrap:wrap">
-        {% if member.role == 'admin' %}
-          <span class="badge badge-gold">Admin</span>
-        {% elif member.role == 'second_admin' %}
-          <span class="badge badge-purple">{{ member.profile.designation|default:"2nd Admin" }}</span>
-        {% elif request.user.role == 'advisor' %}
-          <span class="badge badge-mint">Advisor</span>
-        {% elif member.profile.designation %}
-          <span class="badge badge-accent">{{ member.profile.designation }}</span>
+    <div class="team-card">
+      <!-- Card Top with gradient -->
+      <div class="team-card-top">
+        {% if member.profile.photo %}
+          <img src="{{ member.profile.photo.url }}" alt="{{ member.name }}" class="team-avatar">
+        {% else %}
+          <div class="team-avatar-placeholder">{{ member.name|first|upper }}</div>
         {% endif %}
-        {% if member.profile.batch %}
-          <span class="badge" style="background:var(--glass);border:1px solid var(--glass-border);color:var(--muted)">Batch {{ member.profile.batch }}</span>
-        {% endif %}
-
-        {% if member.profile.blood_group %}
-  <span class="badge badge-mint" style="font-size:0.7rem">🩸 {{ member.profile.blood_group }}</span>
-{% endif %}
-
       </div>
 
-      <p class="team-name">{{ member.name }}</p>
-      <p class="team-email">{{ member.email }}</p>
-      {% if member.profile.bio %}
-        <p class="team-bio">{{ member.profile.bio|truncatechars:120 }}</p>
-      {% endif %}
+      <!-- Card Body -->
+      <div class="team-card-body">
+        <p class="team-name">{{ member.name }}</p>
+        <p class="team-email">{{ member.email }}</p>
+
+        <div class="team-badges">
+          {% if member.role == 'admin' %}
+            <span class="badge badge-gold">👑 Admin</span>
+          {% elif member.role == 'second_admin' %}
+            <span class="badge badge-purple">{{ member.profile.designation|default:"2nd Admin" }}</span>
+          {% elif member.role == 'advisor' %}
+            <span class="badge badge-mint">Advisor</span>
+          {% elif member.profile.designation %}
+            <span class="badge badge-accent">{{ member.profile.designation }}</span>
+          {% endif %}
+
+          {% if member.profile.batch %}
+            <span class="badge" style="background:var(--bg2);color:var(--muted);border:1px solid var(--card-border)">
+              Batch {{ member.profile.batch }}
+            </span>
+          {% endif %}
+
+          {% if member.profile.blood_group %}
+            <span class="badge badge-mint" style="font-size:0.68rem">🩸 {{ member.profile.blood_group }}</span>
+          {% endif %}
+        </div>
+
+        {% if member.profile.bio %}
+          <p class="team-bio">{{ member.profile.bio|truncatechars:120 }}</p>
+        {% endif %}
+      </div>
     </div>
     {% endfor %}
   </div>
   {% else %}
   <div class="glass" style="padding:3rem;text-align:center">
-    <p style="color:var(--muted)">No members found{% if request.GET.q %} matching "{{ request.GET.q }}"{% endif %}.</p>
+    <p style="font-size:2.5rem;margin-bottom:0.75rem">👥</p>
+    <p style="color:var(--muted);font-size:1.05rem;font-weight:600">No members found{% if request.GET.q %} matching "{{ request.GET.q }}"{% endif %}.</p>
   </div>
   {% endif %}
 </div>

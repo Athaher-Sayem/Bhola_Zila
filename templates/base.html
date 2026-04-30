@@ -33,22 +33,22 @@
       <li><a href="{% url 'gallery:gallery' %}">Gallery</a></li>
       <li><a href="{% url 'core:about' %}">About</a></li>
       {% if user.is_authenticated %}
-      <li><a href="{% url 'feedback:submit' %}">Feedback</a></li>
-      <li><a href="{% url 'notices:list' %}">Notices</a></li>
-{% if user.can_post %}
-<li><a href="{% url 'feedback:list' %}">📋 Feedback Inbox</a></li>
-{% endif %}
-        <li><a href="{% url 'accounts:team' %}">Team</a></li>
-        <li><a href="{% url 'accounts:profile' %}">Profile</a></li>
-         {% if user.is_admin %}
-          <li><a href="{% url 'adminpanel:dashboard' %}">⚙ Panel</a></li>
+        {% if user.has_full_access or user.is_admin %}
+          <li><a href="{% url 'feedback:submit' %}">Feedback</a></li>
+          <li><a href="{% url 'notices:list' %}">Notices</a></li>
+          {% if user.can_post %}
+            <li><a href="{% url 'feedback:list' %}">📋 Inbox</a></li>
           {% endif %}
+          <li><a href="{% url 'accounts:team' %}">Team</a></li>
+          <li><a href="{% url 'tasks:list' %}">Tasks</a></li>
+        {% endif %}
+        <li><a href="{% url 'accounts:profile' %}">Profile</a></li>
+        {% if user.is_admin %}
+          <li><a href="{% url 'adminpanel:dashboard' %}">⚙ Panel</a></li>
+        {% endif %}
         {% if user.can_post %}
           <li><a href="{% url 'accounts:verify_members' %}">Verify</a></li>
         {% endif %}
-        {% if user.is_authenticated %}
-  <li><a href="{% url 'tasks:list' %}">Tasks</a></li>
-{% endif %}
         <li><a href="{% url 'accounts:logout' %}" class="btn btn-glass btn-sm">Logout</a></li>
       {% else %}
         <li><a href="{% url 'accounts:login' %}" class="btn btn-glass btn-sm">Login</a></li>
@@ -63,6 +63,13 @@
     {% for message in messages %}
       <div class="alert alert-{{ message.tags|default:'info' }}">{{ message }}</div>
     {% endfor %}
+  </div>
+  {% endif %}
+
+  <!-- Pending Account Approval Banner -->
+  {% if user.is_authenticated and not user.has_full_access and not user.is_admin and not user.account_rejected %}
+  <div style="background:#fffbeb;border-bottom:1px solid #fde68a;padding:0.6rem 1.5rem;text-align:center;font-size:0.83rem;color:#92400e;margin-top:66px">
+    ⏳ Your account is <strong>pending admin approval</strong>. Some features are restricted until approved.
   </div>
   {% endif %}
 

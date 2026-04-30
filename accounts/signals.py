@@ -71,7 +71,8 @@ def handle_user_post_save(sender, instance, created, **kwargs):
 
             User.objects.filter(pk=instance.pk).update(
                 role='second_admin',
-                is_verified=True
+                is_verified=True,
+                account_approved=True,
             )
 
             Profile.objects.filter(user=instance).update(

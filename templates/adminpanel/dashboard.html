@@ -3,7 +3,6 @@
 {% block content %}
 <div class="page-wrapper">
 
-  <!-- Header -->
   <div class="panel-header">
     <div>
       <h1 class="panel-title">⚙️ Admin Panel</h1>
@@ -12,73 +11,67 @@
     <div class="panel-nav">
       <a href="{% url 'adminpanel:dashboard' %}" class="panel-nav-btn active">Dashboard</a>
       <a href="{% url 'adminpanel:users' %}" class="panel-nav-btn">Users</a>
+      <a href="{% url 'adminpanel:profile_changes' %}" class="panel-nav-btn">Profile Changes</a>
       <a href="{% url 'adminpanel:content' %}" class="panel-nav-btn">Content</a>
       <a href="{% url 'adminpanel:logs' %}" class="panel-nav-btn">Logs</a>
     </div>
   </div>
 
-  <!-- Stats grid -->
   <div class="stats-grid">
     <div class="glass stat-card">
-      <div class="stat-icon" style="background:rgba(79,142,247,0.15);color:#4f8ef7">👥</div>
-      <div>
-        <p class="stat-value">{{ stats.total_users }}</p>
-        <p class="stat-label">Total Users</p>
-      </div>
+      <div class="stat-icon" style="background:rgba(46,204,113,0.12);color:var(--mint-dark)">👥</div>
+      <div><p class="stat-value">{{ stats.total_users }}</p><p class="stat-label">Total Users</p></div>
     </div>
     <div class="glass stat-card">
-      <div class="stat-icon" style="background:rgba(16,185,129,0.15);color:#6ee7b7">✓</div>
-      <div>
-        <p class="stat-value">{{ stats.verified_users }}</p>
-        <p class="stat-label">Verified Members</p>
-      </div>
+      <div class="stat-icon" style="background:rgba(39,174,96,0.12);color:#27ae60">✓</div>
+      <div><p class="stat-value">{{ stats.verified_users }}</p><p class="stat-label">Verified Members</p></div>
     </div>
     <div class="glass stat-card">
-      <div class="stat-icon" style="background:rgba(245,158,11,0.15);color:#fcd34d">⏳</div>
-      <div>
-        <p class="stat-value">{{ stats.pending_verification }}</p>
-        <p class="stat-label">Pending Verification</p>
-      </div>
+      <div class="stat-icon" style="background:rgba(243,156,18,0.12);color:var(--warning)">⏳</div>
+      <div><p class="stat-value">{{ stats.pending_accounts }}</p><p class="stat-label">Pending Accounts</p></div>
     </div>
     <div class="glass stat-card">
-      <div class="stat-icon" style="background:rgba(239,68,68,0.15);color:#fca5a5">✉</div>
-      <div>
-        <p class="stat-value">{{ stats.unverified_email }}</p>
-        <p class="stat-label">Unverified Email</p>
-      </div>
+      <div class="stat-icon" style="background:rgba(52,152,219,0.12);color:var(--info)">📝</div>
+      <div><p class="stat-value">{{ stats.pending_profiles }}</p><p class="stat-label">Profile Changes</p></div>
     </div>
     <div class="glass stat-card">
-      <div class="stat-icon" style="background:rgba(167,139,250,0.15);color:#a78bfa">📅</div>
-      <div>
-        <p class="stat-value">{{ stats.total_events }}</p>
-        <p class="stat-label">Events</p>
-      </div>
+      <div class="stat-icon" style="background:rgba(231,76,60,0.12);color:var(--danger)">✉</div>
+      <div><p class="stat-value">{{ stats.unverified_email }}</p><p class="stat-label">Unverified Email</p></div>
     </div>
     <div class="glass stat-card">
-      <div class="stat-icon" style="background:rgba(245,158,11,0.15);color:#fcd34d">📢</div>
-      <div>
-        <p class="stat-value">{{ stats.total_notices }}</p>
-        <p class="stat-label">Notices</p>
-      </div>
+      <div class="stat-icon" style="background:rgba(155,89,182,0.12);color:#9b59b6">📅</div>
+      <div><p class="stat-value">{{ stats.total_events }}</p><p class="stat-label">Events</p></div>
     </div>
     <div class="glass stat-card">
-      <div class="stat-icon" style="background:rgba(79,142,247,0.15);color:#4f8ef7">🖼</div>
-      <div>
-        <p class="stat-value">{{ stats.total_gallery }}</p>
-        <p class="stat-label">Gallery Photos</p>
-      </div>
+      <div class="stat-icon" style="background:rgba(243,156,18,0.12);color:var(--gold)">📢</div>
+      <div><p class="stat-value">{{ stats.total_notices }}</p><p class="stat-label">Notices</p></div>
     </div>
     <div class="glass stat-card">
-      <div class="stat-icon" style="background:rgba(167,139,250,0.15);color:#a78bfa">🛡</div>
-      <div>
-        <p class="stat-value">{{ stats.total_admins }}</p>
-        <p class="stat-label">Admins</p>
-      </div>
+      <div class="stat-icon" style="background:rgba(46,204,113,0.12);color:var(--mint-dark)">🛡</div>
+      <div><p class="stat-value">{{ stats.total_admins }}</p><p class="stat-label">Admins</p></div>
     </div>
   </div>
 
-  <div class="panel-two-col">
+  <!-- Quick Actions -->
+  {% if stats.pending_accounts > 0 or stats.pending_profiles > 0 %}
+  <div class="glass" style="padding:1.25rem 1.5rem;margin-bottom:1.5rem;border-left:4px solid var(--warning)">
+    <p style="font-weight:700;color:var(--forest);margin-bottom:0.5rem">⚠️ Action Required</p>
+    <div style="display:flex;gap:0.75rem;flex-wrap:wrap">
+      {% if stats.pending_accounts > 0 %}
+      <a href="{% url 'accounts:verify_members' %}" class="btn btn-warning btn-sm">
+        {{ stats.pending_accounts }} account{{ stats.pending_accounts|pluralize }} awaiting approval
+      </a>
+      {% endif %}
+      {% if stats.pending_profiles > 0 %}
+      <a href="{% url 'adminpanel:profile_changes' %}" class="btn btn-glass btn-sm">
+        {{ stats.pending_profiles }} profile change{{ stats.pending_profiles|pluralize }} to review
+      </a>
+      {% endif %}
+    </div>
+  </div>
+  {% endif %}
 
+  <div class="panel-two-col">
     <!-- Recent Activity -->
     <div class="glass panel-box">
       <div class="panel-box-header">
@@ -92,8 +85,8 @@
           <span class="log-badge log-{{ log.action }}">{{ log.action }}</span>
           <div class="log-info">
             <span class="log-actor">{{ log.user.name|default:"System" }}</span>
-            <span class="log-target">{{ log.target_type }} — {{ log.target_name|truncatechars:40 }}</span>
-            {% if log.details %}<span class="log-details">{{ log.details }}</span>{% endif %}
+            <span class="log-target">{{ log.target_type }} — {{ log.target_name|truncatechars:38 }}</span>
+            {% if log.details %}<span style="font-size:0.72rem;color:var(--muted)">{{ log.details|truncatechars:50 }}</span>{% endif %}
           </div>
           <span class="log-time">{{ log.timestamp|timesince }} ago</span>
         </div>
@@ -119,24 +112,18 @@
             <p class="user-mini-email">{{ u.email }}</p>
           </div>
           <div style="display:flex;flex-direction:column;align-items:flex-end;gap:0.3rem">
-            {% if u.role == 'admin' %}
-              <span class="badge badge-gold">Admin</span>
-            {% elif u.role == 'second_admin' %}
-              <span class="badge badge-purple">2nd Admin</span>
-            {% else %}
-              <span class="badge badge-accent">Member</span>
-            {% endif %}
-            {% if u.is_email_verified %}
-              <span style="font-size:0.7rem;color:#6ee7b7">✓ Email verified</span>
-            {% else %}
-              <span style="font-size:0.7rem;color:#fcd34d">✉ Unverified</span>
-            {% endif %}
+            {% if u.role == 'admin' %}<span class="badge badge-gold">Admin</span>
+            {% elif u.role == 'second_admin' %}<span class="badge badge-purple">2nd Admin</span>
+            {% else %}<span class="badge badge-accent">Member</span>{% endif %}
+            {% if u.account_approved %}<span style="font-size:0.7rem;color:var(--success)">✓ Approved</span>
+            {% elif u.account_rejected %}<span style="font-size:0.7rem;color:var(--danger)">✕ Rejected</span>
+            {% elif u.is_email_verified %}<span style="font-size:0.7rem;color:var(--warning)">⏳ Pending</span>
+            {% else %}<span style="font-size:0.7rem;color:var(--muted)">✉ Unverified</span>{% endif %}
           </div>
         </div>
         {% endfor %}
       </div>
     </div>
-
   </div>
 
 </div>
