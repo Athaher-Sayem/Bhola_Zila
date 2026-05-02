@@ -4,104 +4,238 @@
 
 {% block content %}
 
-<!-- NOTICE -->
+<!-- NOTICE TICKER -->
 {% if latest_notice %}
 <div class="notice-ticker">
-
-  <span class="ticker-label">📢 NOTICE</span>
-
+  <span class="ticker-label">📢 Notice</span>
   <div class="ticker-content">
-    <div class="ticker-item">
-      <strong>{{ latest_notice.title }}</strong>
-      {% if latest_notice.description %}
-      — {{ latest_notice.description|truncatechars:120 }}
-      {% endif %}
-    </div>
+    <strong>{{ latest_notice.title }}</strong>
+    {% if latest_notice.description %} — {{ latest_notice.description|truncatechars:120 }}{% endif %}
   </div>
-
-  <span class="ticker-date">
-    {{ latest_notice.created_at|date:"d M Y" }}
-  </span>
-
+  <span class="ticker-date">{{ latest_notice.created_at|date:"d M Y" }}</span>
 </div>
 {% endif %}
 
-<!-- ================= SPLIT HERO (FINAL) ================= -->
-<section class="split-hero">
+<!-- ================================================================
+     ACTIVE HERO: VARIANT 4 — LIQUID DIAGONAL FLOW
+     ================================================================ -->
+<section class="hero-section">
+<div class="hero-v4">
 
-  <!-- LEFT SIDE = ORIGINAL HERO CONTENT (ONLY ONE BZSF) -->
-  <div class="split-hero-left">
+  <!-- Soft background wash -->
+  <div class="hero-v4-bg"></div>
 
-    <div class="hero-title">BZSF</div>
+  <!-- ── LEFT: Text Content ── -->
+  <div class="hero-v4-content">
+    <span class="hero-v4-badge">🌿 Bhola Zila Students Forum</span>
 
-    <p class="hero-org">
-      DIU Bhola Zila Students Forum
+    <h1 class="hero-v4-title">
+      DIU<br>
+      <span class="glow">BZSF</span>
+    </h1>
+
+    <p class="hero-v4-sub">
+      Uniting students from Bhola at Daffodil International University
+      through solidarity, culture, and academic excellence.
     </p>
 
-    <p class="hero-sub">
-      Daffodil International University · Solidarity · Excellence
-    </p>
-
-    <div class="split-hero-actions">
-      <a href="{% url 'events:list' %}" class="btn btn-primary">Explore Events</a>
-
+    <div class="hero-v4-actions">
+      <a href="{% url 'events:list' %}" class="btn btn-primary"
+         style="padding:0.75rem 1.75rem;font-size:0.95rem">
+        Explore Events
+      </a>
       {% if not user.is_authenticated %}
-        <a href="{% url 'accounts:signup' %}" class="btn btn-glass">Join BZSF</a>
+        <a href="{% url 'accounts:signup' %}" class="btn btn-glass"
+           style="padding:0.75rem 1.75rem;font-size:0.95rem">
+          Join BZSF
+        </a>
       {% else %}
-        <a href="{% url 'accounts:team' %}" class="btn btn-glass">View Team</a>
+        <a href="{% url 'accounts:team' %}" class="btn btn-glass"
+           style="padding:0.75rem 1.75rem;font-size:0.95rem">
+          Our Team
+        </a>
       {% endif %}
     </div>
 
+    <!-- Stats strip -->
+    <div class="hero-v4-stats">
+      <div>
+        <p class="hero-v4-stat-num">200+</p>
+        <p class="hero-v4-stat-lbl">Active Members</p>
+      </div>
+      <div class="hero-v4-stat-divider"></div>
+      <div>
+        <p class="hero-v4-stat-num">50+</p>
+        <p class="hero-v4-stat-lbl">Events Held</p>
+      </div>
+      <div class="hero-v4-stat-divider"></div>
+      <div>
+        <p class="hero-v4-stat-num">3+</p>
+        <p class="hero-v4-stat-lbl">Years Active</p>
+      </div>
+    </div>
+
+    <!-- Admin: upload hero images -->
+    {% if user.is_admin %}
+    <form method="post" action="{% url 'core:hero_upload' %}" enctype="multipart/form-data"
+          style="margin-top:0.5rem">
+      {% csrf_token %}
+      <label class="btn btn-glass btn-sm" style="cursor:pointer">
+        + Upload Hero Images
+        <input type="file" name="images" multiple accept="image/*" style="display:none"
+               onchange="this.closest('form').submit()">
+      </label>
+    </form>
+    {% endif %}
   </div>
 
+  <!-- ── RIGHT: Diagonal flowing image panel ── -->
+  <div class="hero-v4-diagonal">
+    <!-- Inner wrapper receives the rotation so the outer can clip cleanly -->
+    <div class="hero-v4-diagonal-inner">
 
-  <!-- RIGHT SIDE IMAGE SLIDER -->
-  <div class="split-hero-right" style="position:relative">
-  <div class="split-slider-track">
-    {% for hi in hero_images %}
-    <div class="split-slider-card">
-      <img src="{{ hi.image.url }}" alt="BHOLA">
-      {% if user.is_admin %}
-      <form method="post" action="{% url 'core:hero_delete' hi.pk %}"
-            style="position:absolute;top:6px;right:6px;z-index:10"
-            onsubmit="return confirm('Delete this hero image?')">
-        {% csrf_token %}
-        <button type="submit" class="btn btn-danger btn-xs">✕</button>
-      </form>
-      {% endif %}
-    </div>
-    {% empty %}
-    <div class="split-slider-card" style="display:flex;align-items:center;justify-content:center;background:var(--bg2)">
-      <p style="color:var(--muted);font-size:0.85rem">No hero images yet</p>
-    </div>
-    {% endfor %}
-    {# Duplicate for seamless loop #}
-    {% for hi in hero_images %}
-    <div class="split-slider-card"><img src="{{ hi.image.url }}" alt="BHOLA"></div>
-    {% endfor %}
-  </div>
+      <!-- Column 1 — scrolls upward -->
+      <div class="diag-col diag-col-1">
+        {% for hi in hero_images %}
+          <div class="diag-img">
+            <img src="{{ hi.image.url }}" alt="BZSF">
+            {% if user.is_admin %}
+            <form method="post" action="{% url 'core:hero_delete' hi.pk %}"
+                  style="position:absolute;top:6px;right:6px;z-index:10"
+                  onsubmit="return confirm('Delete this image?')">
+              {% csrf_token %}
+              <button type="submit" class="btn btn-danger btn-xs">✕</button>
+            </form>
+            {% endif %}
+          </div>
+        {% empty %}
+          <div class="diag-img ghost"></div>
+          <div class="diag-img ghost"></div>
+          <div class="diag-img ghost"></div>
+        {% endfor %}
+        <div class="diag-img ghost"></div>
+        {# Duplicate for seamless loop #}
+        {% for hi in hero_images %}
+          <div class="diag-img"><img src="{{ hi.image.url }}" alt="BZSF"></div>
+        {% endfor %}
+      </div>
 
-  {% if user.is_admin %}
-  <form method="post" action="{% url 'core:hero_upload' %}" enctype="multipart/form-data"
-        style="position:absolute;bottom:10px;left:50%;transform:translateX(-50%);z-index:10;display:flex;gap:0.5rem;align-items:center">
-    {% csrf_token %}
-    <label class="btn btn-primary btn-sm" style="cursor:pointer;margin:0">
-      + Upload
-      <input type="file" name="images" multiple accept="image/*" style="display:none"
-             onchange="this.closest('form').submit()">
-    </label>
-  </form>
-  {% endif %}
-</div>
+      <!-- Column 2 — scrolls downward -->
+      <div class="diag-col diag-col-2">
+        {% for hi in hero_images|slice:"1:" %}
+          <div class="diag-img"><img src="{{ hi.image.url }}" alt="BZSF"></div>
+        {% empty %}
+          <div class="diag-img ghost"></div>
+          <div class="diag-img ghost"></div>
+        {% endfor %}
+        <div class="diag-img ghost"></div>
+        {% for hi in hero_images|slice:"1:" %}
+          <div class="diag-img"><img src="{{ hi.image.url }}" alt="BZSF"></div>
+        {% endfor %}
+      </div>
 
+      <!-- Column 3 — scrolls upward (hidden on mobile) -->
+      <div class="diag-col diag-col-3">
+        {% for hi in hero_images|slice:"::2" %}
+          <div class="diag-img"><img src="{{ hi.image.url }}" alt="BZSF"></div>
+        {% empty %}
+          <div class="diag-img ghost"></div>
+          <div class="diag-img ghost"></div>
+        {% endfor %}
+        <div class="diag-img ghost"></div>
+        {% for hi in hero_images|slice:"::2" %}
+          <div class="diag-img"><img src="{{ hi.image.url }}" alt="BZSF"></div>
+        {% endfor %}
+      </div>
+
+    </div>{# /.hero-v4-diagonal-inner #}
+  </div>{# /.hero-v4-diagonal #}
+
+</div>{# /.hero-v4 #}
 </section>
-<!-- ================= END SPLIT HERO ================= -->
+
+<!-- ================================================================
+     HERO VARIANT 2 — 3D TILTED GALLERY
+     To use: swap the section below with the one above.
+     ================================================================
+<section class="hero-section">
+<div class="hero-v2">
+  <div class="hero-v2-left">
+    <span class="hero-v2-tag">Bhola Zila Students Forum</span>
+    <h1 class="hero-v2-title">DIU <span class="grad-word">BZSF</span></h1>
+    <p class="hero-v2-sub">Uniting students from Bhola at Daffodil International University through solidarity, culture, and excellence.</p>
+    <div class="hero-v2-actions">
+      <a href="{% url 'events:list' %}" class="btn btn-primary" style="padding:0.75rem 1.75rem">Explore Events</a>
+      <a href="{% url 'accounts:signup' %}" class="btn btn-glass" style="padding:0.75rem 1.75rem">Join BZSF</a>
+    </div>
+  </div>
+  <div class="hero-v2-right">
+    <div class="tilted-wall">
+      {% for hi in hero_images|slice:":4" %}
+      <div class="tilted-card"><img src="{{ hi.image.url }}" alt="BZSF"></div>
+      {% empty %}
+      <div class="tilted-card" style="background:var(--forest-light);aspect-ratio:1"></div>
+      <div class="tilted-card" style="background:var(--bg2);aspect-ratio:2/3"></div>
+      <div class="tilted-card" style="background:rgba(52,211,153,0.1);aspect-ratio:3/4"></div>
+      <div class="tilted-card" style="background:var(--forest-light);aspect-ratio:1"></div>
+      {% endfor %}
+    </div>
+  </div>
+</div>
+</section>
+-->
+
+<!-- ================================================================
+     HERO VARIANT 3 — MAGNETIC ORBIT
+     ================================================================
+<section class="hero-section">
+<div class="hero-v3">
+  <div class="hero-v3-left">
+    <h1 class="hero-v3-title">DIU<br><em>BZSF</em></h1>
+    <p class="hero-v3-sub">Uniting Bhola students at Daffodil International University — solidarity, culture & excellence.</p>
+    <div class="hero-v3-actions">
+      <a href="{% url 'events:list' %}" class="btn btn-primary" style="padding:0.75rem 1.75rem">Explore Events</a>
+      <a href="{% url 'accounts:signup' %}" class="btn btn-glass" style="padding:0.75rem 1.75rem">Join BZSF</a>
+    </div>
+  </div>
+  <div class="hero-v3-right">
+    <div class="orbit-system">
+      <div class="orbit-center"><span>BZSF</span></div>
+      <div class="orbit-ring orbit-ring-1">
+        {% for hi in hero_images|slice:":2" %}
+        <div class="orbit-img orbit-img-r1{% if forloop.first %}a{% else %}b{% endif %}">
+          <img src="{{ hi.image.url }}" alt="">
+        </div>
+        {% endfor %}
+      </div>
+      <div class="orbit-ring orbit-ring-2">
+        {% for hi in hero_images|slice:"2:5" %}
+        <div class="orbit-img orbit-img-r2{% if forloop.counter == 1 %}a{% elif forloop.counter == 2 %}b{% else %}c{% endif %}">
+          <img src="{{ hi.image.url }}" alt="">
+        </div>
+        {% endfor %}
+      </div>
+      <div class="orbit-ring orbit-ring-3">
+        {% for hi in hero_images|slice:"5:7" %}
+        <div class="orbit-img orbit-img-r3{% if forloop.first %}a{% else %}b{% endif %}">
+          <img src="{{ hi.image.url }}" alt="">
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+</div>
+</section>
+-->
 
 
-<!-- EVENTS -->
+
+
+<!-- ================================================================
+     EVENTS SECTION
+     ================================================================ -->
 {% if events %}
 <section class="section-wrapper">
-
   <div class="section-header">
     <div>
       <h2 class="section-label">Latest Events</h2>
@@ -112,42 +246,44 @@
 
   <div class="card-grid">
     {% for event in events %}
-    <div class="glass content-card">
-  {% if event.images.all %}
-  <div class="event-images" style="{% if event.images.count == 1 %}grid-template-columns:1fr{% endif %}">
-    {% for img in event.images.all|slice:":4" %}
-      <img src="{{ img.image.url }}" alt="{{ event.title }}"
-           onclick="window.location='{% url 'events:detail' event.pk %}'">
+    <div class="glass content-card" style="gap:0.75rem">
+      {% if event.images.all %}
+      <div class="event-images" style="{% if event.images.count == 1 %}grid-template-columns:1fr{% endif %}">
+        {% for img in event.images.all|slice:":4" %}
+          <img src="{{ img.image.url }}" alt="{{ event.title }}"
+               onclick="window.location='{% url 'events:detail' event.pk %}'">
+        {% endfor %}
+      </div>
+      {% endif %}
+      <h3 class="card-title" style="margin-top:0.5rem">{{ event.title }}</h3>
+      <p class="card-meta">
+        {{ event.created_at|date:"d M Y" }}
+        {% if event.created_by %}&nbsp;·&nbsp; {{ event.created_by.name }}{% endif %}
+      </p>
+      <p class="card-body">{{ event.description|truncatechars:100 }}</p>
+      <div style="margin-top:auto;padding-top:0.75rem">
+        <a href="{% url 'events:detail' event.pk %}" class="btn btn-glass btn-sm">View Details →</a>
+      </div>
+    </div>
     {% endfor %}
   </div>
-  {% endif %}
-  <h3 class="card-title" style="margin-top:0.75rem">{{ event.title }}</h3>
-  <p class="card-meta">
-    {{ event.created_at|date:"d M Y" }}
-    {% if event.created_by %}&nbsp;·&nbsp; {{ event.created_by.name }}{% endif %}
-  </p>
-  <p class="card-body">{{ event.description|truncatechars:100 }}</p>
-  <div style="margin-top:auto;padding-top:0.75rem">
-    <a href="{% url 'events:detail' event.pk %}" class="btn btn-glass btn-sm">View Details →</a>
-  </div>
-</div>
-    {% endfor %}
-  </div>
-
 </section>
 {% endif %}
 
-
-<!-- MEMBERS SLIDER -->
+<!-- ================================================================
+     MEMBERS SLIDER
+     ================================================================ -->
 <section class="members-section">
   <div class="section-wrapper">
-    <h2 class="section-label" style="text-align:center">Our Members</h2>
-    <p class="section-sub" style="text-align:center">The people who make BZSF</p>
+    <div style="text-align:center;margin-bottom:0.5rem">
+      <h2 class="section-label">Our Members</h2>
+      <p class="section-sub" style="margin-top:0.4rem">The people who make BZSF great</p>
+    </div>
 
     <div class="members-slider-wrap">
       <div class="members-track">
         {% for member in members %}
-        <div class="member-card portrait-style">
+        <div class="member-card">
           <div class="member-avatar-wrap">
             {% if member.profile.photo %}
               <img src="{{ member.profile.photo.url }}" alt="{{ member.name }}">
@@ -155,26 +291,41 @@
               <span class="member-initial">{{ member.name|first|upper }}</span>
             {% endif %}
           </div>
-
-          <div class="member-info">
-            <p class="member-name">{{ member.name }}</p>
-
-            {% if member.role == 'admin' %}
-              <p class="member-role" style="color:#fcd34d">👑 Admin</p>
-            {% elif member.role == 'second_admin' %}
-              <p class="member-role" style="color:#c4b5fd">⭐ {{ member.profile.designation|default:"2nd Admin" }}</p>
-            {% elif member.profile.designation %}
-              <p class="member-role">{{ member.profile.designation }}</p>
-            {% endif %}
-
-            {% if member.profile.batch %}
-              <p class="member-batch">Batch {{ member.profile.batch }}</p>
-            {% endif %}
-
-            {% if member.profile.bio %}
-              <p class="member-bio">{{ member.profile.bio }}</p>
+          <p class="member-name">{{ member.name }}</p>
+          {% if member.role == 'admin' %}
+            <p class="member-role" style="color:var(--gold)">👑 Admin</p>
+          {% elif member.role == 'second_admin' %}
+            <p class="member-role" style="color:var(--lavender)">⭐ {{ member.profile.designation|default:"2nd Admin" }}</p>
+          {% elif member.profile.designation %}
+            <p class="member-role">{{ member.profile.designation }}</p>
+          {% endif %}
+          {% if member.profile.batch %}
+            <p class="member-batch">Batch {{ member.profile.batch }}</p>
+          {% endif %}
+          {% if member.profile.bio %}
+            <p class="member-bio">{{ member.profile.bio }}</p>
+          {% endif %}
+        </div>
+        {% endfor %}
+        {# Duplicate for seamless loop #}
+        {% for member in members %}
+        <div class="member-card">
+          <div class="member-avatar-wrap">
+            {% if member.profile.photo %}
+              <img src="{{ member.profile.photo.url }}" alt="{{ member.name }}">
+            {% else %}
+              <span class="member-initial">{{ member.name|first|upper }}</span>
             {% endif %}
           </div>
+          <p class="member-name">{{ member.name }}</p>
+          {% if member.role == 'admin' %}
+            <p class="member-role" style="color:var(--gold)">👑 Admin</p>
+          {% elif member.profile.designation %}
+            <p class="member-role">{{ member.profile.designation }}</p>
+          {% endif %}
+          {% if member.profile.batch %}
+            <p class="member-batch">Batch {{ member.profile.batch }}</p>
+          {% endif %}
         </div>
         {% endfor %}
       </div>
@@ -183,12 +334,3 @@
 </section>
 
 {% endblock %}
-
-<script>
-document.addEventListener("DOMContentLoaded", function () {
-  const track = document.getElementById("tickerTrack");
-  if (track) {
-    track.innerHTML += track.innerHTML;
-  }
-});
-</script>
