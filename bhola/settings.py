@@ -134,10 +134,10 @@ else:
     AWS_STORAGE_BUCKET_NAME = 'media'
     AWS_S3_ENDPOINT_URL = os.environ.get('SUPABASE_S3_ENDPOINT')
     AWS_S3_SIGNATURE_VERSION = 's3v4'
-    AWS_DEFAULT_ACL = None
     AWS_QUERYSTRING_AUTH = False
     AWS_S3_FILE_OVERWRITE = False
     AWS_S3_ADDRESSING_STYLE = 'path'
+    AWS_DEFAULT_ACL = 'public-read'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
