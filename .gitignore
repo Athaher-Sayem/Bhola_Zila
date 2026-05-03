@@ -18,3 +18,5 @@ staticfiles/
 # Environment variables
 .env
 
+"repomix-output.xml" 
+"repomix-output*.xml" 
