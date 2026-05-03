@@ -1,10 +1,10 @@
 {% extends 'base.html' %}
-{% block title %}Team — BHOLA{% endblock %}
+{% block title %}Team — BZSF{% endblock %}
 {% block content %}
 <div class="page-wrapper">
   <div class="page-header">
     <h1>Our Team</h1>
-    <p>The verified members of BHOLA</p>
+    <p>The verified members of BZSF</p>
   </div>
 
   <!-- Search + Filter -->
@@ -38,7 +38,7 @@
       <!-- Card Body -->
       <div class="team-card-body">
         <p class="team-name">{{ member.name }}</p>
-        <p class="team-email">{{ member.email }}</p>
+        {% comment %} <p class="team-email">{{ member.email }}</p> {% endcomment %}
 
         <div class="team-badges">
           {% if member.role == 'admin' %}

@@ -1,10 +1,10 @@
 {% extends 'base.html' %}
-{% block title %}Login — BHOLA{% endblock %}
+{% block title %}Login — BZSF{% endblock %}
 {% block content %}
 <div class="page-wrapper" style="display:flex;align-items:center;justify-content:center;min-height:80vh;padding-top:6rem">
   <div class="glass form-card" style="width:100%">
     <h1 class="form-title">Welcome Back</h1>
-    <p class="form-subtitle">Sign in to your BHOLA account</p>
+    <p class="form-subtitle">Sign in to your BZSF account</p>
 
     <form method="post" novalidate>
       {% csrf_token %}
@@ -31,7 +31,7 @@
     </form>
 
     <p style="text-align:center;margin-top:1.5rem;color:var(--muted);font-size:0.85rem">
-      Don't have an account? <a href="{% url 'accounts:signup' %}" style="color:var(--accent)">Join BHOLA</a>
+      Don't have an account? <a href="{% url 'accounts:signup' %}" style="color:var(--accent)">Join BZSF</a>
     </p>
 
 

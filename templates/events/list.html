@@ -1,11 +1,11 @@
 {% extends 'base.html' %}
-{% block title %}Events — BHOLA{% endblock %}
+{% block title %}Events — BZSF{% endblock %}
 {% block content %}
 <div class="page-wrapper">
   <div class="page-header" style="display:flex;justify-content:space-between;align-items:flex-end;flex-wrap:wrap;gap:1rem">
     <div>
       <h1>Events</h1>
-      <p>What's happening at BHOLA</p>
+      <p>What's happening at BZSF</p>
     </div>
     <div style="display:flex;align-items:center;gap:1rem;">
       <form method="get" class="search-bar" style="display:flex;align-items:center;gap:0.5rem">
@@ -40,7 +40,7 @@
         <p class="card-body">{{ event.description|truncatechars:120 }}</p>
       {% endif %}
       <div style="display:flex;gap:0.5rem;margin-top:1rem;flex-wrap:wrap">
-        <a href="{% url 'events:detail' event.pk %}" class="btn btn-glass btn-sm">View Details</a>
+        <a href="{% url 'events:detail' event.pk %}" class="btn btn-primary">View Details</a>
         {% if user.is_authenticated and user.is_admin %}
           <a href="{% url 'events:delete' event.pk %}" class="btn btn-danger btn-sm"
             onclick="return confirm('Delete this event?')">Delete</a>
