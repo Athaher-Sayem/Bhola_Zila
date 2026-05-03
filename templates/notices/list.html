@@ -9,15 +9,17 @@
       <p>Official announcements from BHOLA</p>
     </div>
 
-    <form method="get" class="search-bar">
-  <input type="text" name="q" value="{{ query }}" placeholder="🔍 Search notices...">
-  <button type="submit" class="btn btn-primary">Search</button>
-  {% if query %}<a href="{% url 'notices:list' %}" class="btn btn-glass">Clear</a>{% endif %}
-</form>
+    <div style="display:flex;align-items:center;gap:1rem;">
+      <form method="get" class="search-bar" style="display:flex;align-items:center;gap:0.5rem">
+        <input type="text" name="q" value="{{ query }}" placeholder="🔍 Search notices...">
+        <button type="submit" class="btn btn-primary">Search</button>
+        {% if query %}<a href="{% url 'notices:list' %}" class="btn btn-glass">Clear</a>{% endif %}
+      </form>
 
-    {% if user.is_authenticated and user.can_post %}
-      <a href="{% url 'notices:create' %}" class="btn btn-primary">+ Post Notice</a>
-    {% endif %}
+      {% if user.is_authenticated and user.can_post %}
+        <a href="{% url 'notices:create' %}" class="btn btn-primary">+ Post Notice</a>
+      {% endif %}
+    </div>
     
   </div>
 
