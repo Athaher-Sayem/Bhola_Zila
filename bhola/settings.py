@@ -9,7 +9,7 @@ if os.getenv('VERCEL', '') != '1':
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = os.getenv('SECRET_KEY', 'k9t@izm0&4x^+hptrlb7zd648t1o%kd7^z_4svl7mc@m@o2gu&')
-DEBUG = os.getenv('DEBUG', 'True') == 'True'
+DEBUG = os.getenv('DEBUG', 'False') == 'True'
 ALLOWED_HOSTS = ['*']
 
 INSTALLED_APPS = [
@@ -132,7 +132,6 @@ if not DEBUG:
     AWS_QUERYSTRING_AUTH = False
     AWS_S3_FILE_OVERWRITE = False
 
-    MEDIA_URL = '/'
 else:
     MEDIA_URL = '/media/'
     MEDIA_ROOT = BASE_DIR / 'media'
