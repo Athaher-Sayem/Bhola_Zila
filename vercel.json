@@ -1,20 +1,7 @@
 {
+  "buildCommand": "python manage.py collectstatic --noinput",
   "installCommand": "pip install -r requirements.txt",
-  "builds": [
-    {
-      "src": "bhola/wsgi.py",
-      "use": "@vercel/python",
-      "config": {
-        "runtime": "python3.12",
-        "buildCommand": "python manage.py collectstatic --noinput"
-      }
-    }
-  ],
   "routes": [
-    {
-      "src": "/static/(.*)",
-      "dest": "/static/$1"
-    },
     {
       "src": "/(.*)",
       "dest": "bhola/wsgi.py"
