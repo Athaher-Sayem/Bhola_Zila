@@ -1437,6 +1437,121 @@ select option { background: #fff; color: var(--text); }
   font-family: 'DM Sans', sans-serif;
 }
 
+/* Profile change review cards (admin) */
+.verify-card {
+  background: var(--card-bg);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius);
+  box-shadow: var(--card-shadow);
+  backdrop-filter: blur(20px);
+  padding: 1.65rem;
+  margin-bottom: 1rem;
+}
+
+.verify-card-header {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+  margin-bottom: 1rem;
+}
+
+.verify-avatar {
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  background: var(--grad-mint);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Inter', serif;
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: #fff;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+.verify-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.verify-info {
+  flex: 1;
+  min-width: 0;
+}
+.verify-info h4 {
+  font-family: 'Inter', serif;
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--forest);
+  margin: 0 0 0.2rem;
+}
+.verify-info p {
+  font-size: 0.78rem;
+  color: var(--muted);
+  margin: 0;
+}
+
+.verify-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+/* Diff comparison grid */
+.change-diff {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.8rem;
+  margin-top: 1.2rem;
+}
+
+.diff-old,
+.diff-new {
+  background: rgba(0,0,0,0.02);
+  border-radius: var(--radius-sm);
+  padding: 0.75rem 1rem;
+  border: 1px solid var(--card-border);
+}
+
+.diff-label {
+  font-size: 0.65rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  font-weight: 600;
+  color: var(--muted);
+  margin-bottom: 0.35rem;
+}
+
+.diff-old .diff-label {
+  color: var(--muted);
+}
+.diff-new .diff-label {
+  color: var(--mint-dark);
+}
+
+.diff-value {
+  font-size: 0.875rem;
+  color: var(--text);
+  word-break: break-word;
+}
+
+/* Status badges for profile changes */
+.badge-pending {
+  background: rgba(245, 158, 11, 0.12);
+  color: #92400e;
+  border: 1px solid rgba(245, 158, 11, 0.3);
+}
+
+.badge-rejected {
+  background: rgba(239, 68, 68, 0.12);
+  color: #991b1b;
+  border: 1px solid rgba(239, 68, 68, 0.3);
+}
+
 /* ============================================================
    ABOUT PAGE
    ============================================================ */
