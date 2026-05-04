@@ -252,6 +252,8 @@
         {% for img in event.images.all|slice:":4" %}
           <img src="{{ img.image.url }}" alt="{{ event.title }}"
                onclick="window.location='{% url 'events:detail' event.pk %}'">
+
+          <p style="color:red;">RAW URL: [{{ img.image.url }}]</p>
         {% endfor %}
       </div>
       {% endif %}
