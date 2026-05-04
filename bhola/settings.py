@@ -4,7 +4,7 @@ import dj_database_url
 
 if os.getenv('VERCEL', '') != '1':
     from dotenv import load_dotenv
-    load_dotenv()
+    load_dotenv(override=True)
 
 
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -137,7 +137,12 @@ else:
     AWS_QUERYSTRING_AUTH = False
     AWS_S3_FILE_OVERWRITE = False
     AWS_DEFAULT_ACL = 'public-read'
-    AWS_S3_CUSTOM_DOMAIN = "iubicmwwjmpnwsabzdvb.supabase.co/storage/v1/object/public/media"
+    
+    # Safely get the Supabase URL and remove the protocol to prevent double https://
+    raw_supabase_url = os.environ.get('SUPABASE_URL', '')
+    clean_supabase_url = raw_supabase_url.replace('https://', '').replace('http://', '')
+    
+    AWS_S3_CUSTOM_DOMAIN = f"{clean_supabase_url}/storage/v1/object/public/{AWS_STORAGE_BUCKET_NAME}"
     
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'

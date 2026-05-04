@@ -33,7 +33,6 @@ def compress_image(upload_file):
 
 def home(request):
     latest_notice = Notice.objects.first()
-    debug_custom_domain = getattr(settings, 'AWS_S3_CUSTOM_DOMAIN', 'NOT SET')
     members = User.objects.filter(is_verified=True, is_email_verified=True).select_related('profile')[:12]
     events = Event.objects.prefetch_related('images').all()[:3]
     hero_images = HeroImage.objects.all()[:8]
@@ -42,7 +41,6 @@ def home(request):
         'members': members,
         'events': events,
         'hero_images': hero_images,
-        'debug_custom_domain': debug_custom_domain,
     })
 
 
