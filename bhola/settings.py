@@ -137,7 +137,7 @@ else:
     AWS_QUERYSTRING_AUTH = False
     AWS_S3_FILE_OVERWRITE = False
     AWS_DEFAULT_ACL = 'public-read'
-    AWS_S3_CUSTOM_DOMAIN = "https://iubicmwwjmpnwsabzdvb.supabase.co/storage/v1/object/public/media"
+    AWS_S3_CUSTOM_DOMAIN = "iubicmwwjmpnwsabzdvb.supabase.co/storage/v1/object/public/media"
     
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
